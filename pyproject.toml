@@ -1,0 +1,19 @@
+[project]
+name = "ohtu"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "very-blank", email = "aapeli.saarelainen.76@gmail.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "pyqt6>=6.12.1",
+]
+
+[project.scripts]
+ohtu = "ohtu:main"
+
+[build-system]
+requires = ["uv_build>=0.13.7,<0.14.0"]
+build-backend = "uv_build"
