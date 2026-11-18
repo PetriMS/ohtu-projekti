@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.14"
 dependencies = [
+    "pylint>=4.1.4",
     "pyqt6>=6.12.1",
 ]
 
@@ -17,3 +18,9 @@ ohtu = "ohtu:main"
 [build-system]
 requires = ["uv_build>=0.13.7,<0.14.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "coverage>=7.17.3",
+    "pytest>=9.2.0",
+]
