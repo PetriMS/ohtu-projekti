@@ -4,8 +4,16 @@ from PyQt6.QtWidgets import (
 )
 
 sources = [
-    {"name": "Source A", "from": "Website", "writers": [], "categories": [], "tags": []},
-    {"name": "Source B", "from": "Book", "writers": [], "categories": [], "tags": []},
+    {"id": 0, "name": "Source A", "from": "Website", "writers": ["Alice Johnson", "Mark Lee"], "categories": [], "tags": ["technology", "ai", "news"]},
+    {"id": 1, "name": "Source B", "from": "Book", "writers": ["Elena Petrova"], "categories": [], "tags": ["history", "europe", "biography"]},
+    {"id": 2, "name": "Source C", "from": "Magazine", "writers": ["David Kim", "Sara Nieminen"], "categories": [], "tags": ["design", "architecture"]},
+    {"id": 3, "name": "Source D", "from": "Podcast", "writers": ["Tom Becker"], "categories": [], "tags": ["economics", "interview", "markets"]},
+    {"id": 4, "name": "Source E", "from": "Website", "writers": ["Priya Sharma", "Lucas Martin", "Hanna Virtanen"], "categories": [], "tags": ["science", "climate", "research"]},
+    {"id": 5, "name": "Source F", "from": "Journal", "writers": ["Dr. Oliver Grant"], "categories": [], "tags": ["medicine", "peer-reviewed"]},
+    {"id": 6, "name": "Source G", "from": "Book", "writers": ["Maria Lopez", "James O'Connor"], "categories": [], "tags": ["fiction", "mystery"]},
+    {"id": 7, "name": "Source H", "from": "Newspaper", "writers": ["Kenji Tanaka"], "categories": [], "tags": ["politics", "local", "opinion"]},
+    {"id": 8, "name": "Source I", "from": "Video", "writers": ["Emma Wilson"], "categories": [], "tags": ["tutorial", "programming", "python"]},
+    {"id": 9, "name": "Source J", "from": "Website", "writers": [], "categories": [], "tags": ["travel", "food"]},
 ]
 
 
