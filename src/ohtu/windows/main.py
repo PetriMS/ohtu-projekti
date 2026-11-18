@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QListWidget, QPushButton)
+from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QPushButton, QLineEdit)
 
 sources = [
     {"id": 0, "name": "Source A", "from": "Website", "writers": ["Alice Johnson", "Mark Lee"], "tags": ["technology", "ai", "news"]},
@@ -13,22 +13,55 @@ sources = [
     {"id": 9, "name": "Source J", "from": "Website", "writers": [], "tags": ["travel", "food"]},
 ]
 
+fields = [
+    "author",
+    "title",
+    "publisher",
+    "address",
+    "year",
+    "tag",
+    "id",
+]
+
+buttons = [
+    "add",
+    "edit",
+    "delete",
+    "uncheck",
+];
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Hello, World!")
 
+        bar = QHBoxLayout()
+        for button in buttons:
+            bar.addWidget(QPushButton(button))
+
+        search = QLineEdit()
+        search.setPlaceholderText("search")
+        bar.addWidget(search)
+    
+        fields_list = QVBoxLayout()
+        for field in fields:
+            line = QLineEdit()
+            line.setPlaceholderText(field)
+            fields_list.addWidget(line)
+
+        
         source_list = QListWidget()
         for source in sources:
             source_list.addItem(f"{source['name']} — {source['from']}")
 
-        button = QPushButton("Exit")
-        button.pressed.connect(self.close)
+        view = QHBoxLayout()
+        view.addLayout(fields_list)
+        view.addWidget(source_list)
 
         layout = QVBoxLayout()
-        layout.addWidget(source_list)
-        layout.addWidget(button)
+        layout.addLayout(bar)
+        layout.addLayout(view)
 
         container = QWidget()
         container.setLayout(layout)
