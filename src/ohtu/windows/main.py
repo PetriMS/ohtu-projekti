@@ -1,7 +1,4 @@
-from PyQt6.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout,
-    QListWidget, QPushButton,
-)
+from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QListWidget, QPushButton)
 
 sources = [
     {"id": 0, "name": "Source A", "from": "Website", "writers": ["Alice Johnson", "Mark Lee"], "tags": ["technology", "ai", "news"]},
