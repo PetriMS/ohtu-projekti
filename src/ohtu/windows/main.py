@@ -29,26 +29,17 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Hello, World!")
 
-        bar = QHBoxLayout()
-        bar.addWidget(QPushButton("add"))
-        bar.addWidget(QPushButton("edit"))
-        bar.addWidget(QPushButton("delete"))
-        bar.addWidget(QPushButton("uncheck"))
+        bar = TopBar()
 
-        search = QLineEdit()
-        search.setPlaceholderText("search")
-        bar.addWidget(search)
-    
         fields_list = QVBoxLayout()
-        fields_list.setSpacing(5);
+        fields_list.setSpacing(5)
         fields_list.setAlignment(Qt.AlignmentFlag.AlignTop)
         for field in fields:
             line = QLineEdit()
             line.setPlaceholderText(field)
-            line.setAlignment(Qt.AlignmentFlag.AlignTop);
+            line.setAlignment(Qt.AlignmentFlag.AlignTop)
             fields_list.addWidget(line)
 
-        
         source_list = QListWidget()
         for source in sources:
             source_list.addItem(f"{source['name']} — {source['from']}")
@@ -66,6 +57,18 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(container)
         self.show()
 
-class TopBar(QWidget):
+class TopBar(QHBoxLayout):
+    def __init__(self):
+        super().__init__()
+        self.addWidget(QPushButton("add"))
+        self.addWidget(QPushButton("edit"))
+        self.addWidget(QPushButton("delete"))
+        self.addWidget(QPushButton("uncheck"))
+
+        search = QLineEdit()
+        search.setPlaceholderText("search")
+        self.addWidget(search)
+
+class SourceEditor(QWidget):
     def __init__(self):
         super().__init__()
