@@ -1,6 +1,8 @@
 # Ohtu-projekti
 Ohjelmistotuotanto-kurssin miniprojekti, ryhmä 6
 
+[![CI](https://github.com/xNPx3/ohtu-projekti/actions/workflows/main.yml/badge.svg)](https://github.com/xNPx3/ohtu-projekti/actions/workflows/main.yml)
+
 ## Sovelluksen käyttö
 ![UI_kuva](UI_kuvat/UI_tavoite.png)
 
