@@ -14,39 +14,49 @@ Esimerkki dataa:
 # Muokataan loppuun valmiiksi, kun tiedetään miten ja mitä dataa saadaan
 
 
-def luo_bibtex_data(data):
+from modules.io_handler import IOHandler
+
+
+class BibTeXHandler:
     """
-    Muodostetaan BibTeX-sisältö datan perusteella.
-    Datassa pitää olla vähintäänkin tyyppi ja tunnus.
+    Luokka BibTeX-datan hallintaan
     """
-    validoi(data)
 
-    tyyppi = data["tyyppi"]
-    tunnus = data["tunnus"]
+    def __init__(self, io):
+        self.io = io
 
-    content = ""
-    for key in data:
-        # Käsitellään kaikki kentät paitsi tunnus ja lähteen tyyppi
-        if key not in ["tyyppi", "tunnus"]:
-            content += f"    {key} = {{{data[key]}}},\n"
+    def luo_bibtex_data(self, data: dict):
+        """
+        Muodostetaan BibTeX-sisältö datan perusteella.
+        Datassa pitää olla vähintäänkin tyyppi ja tunnus.
+        """
+        self.validoi(data)
 
-    return f"""@{tyyppi}{{{tunnus}\n{content}}}"""
+        tyyppi = data["tyyppi"]
+        tunnus = data["tunnus"]
 
+        content = ""
+        for key in data:
+            # Käsitellään kaikki kentät paitsi tunnus ja lähteen tyyppi
+            if key not in ["tyyppi", "tunnus"]:
+                content += f"    {key} = {{{data[key]}}},\n"
 
-def validoi(data):
-    """
-    Validoidaan data,
-    esim. tunnuksessa ei saa olla välilyöntejä tms.
-    """
-    if " " in data["tunnus"]:
-        # TODO
-        raise ValueError("Tunnus sisältää välilyöntejä")
+        return f"""@{tyyppi}{{{tunnus}\n{content}}}"""
 
-    pass
+    def validoi(self, data: dict):
+        """
+        Validoidaan data,
+        esim. tunnuksessa ei saa olla välilyöntejä tms.
+        """
+        if " " in data["tunnus"]:
+            # TODO
+            raise ValueError("Tunnus sisältää välilyöntejä")
 
-
-def tallenna_tiedostoon(bibtex_data):
-    pass
+    def tallenna_tiedostoon(self, filepath: str, bibtex_data: str):
+        """
+        Tallennetaan BibTeX-muotoinen data tiedostoon.
+        """
+        io.write_file(bibtex_data, filepath)
 
 
 # Testi kehitysympäristössä
@@ -60,5 +70,7 @@ if __name__ == "__main__":
         "year": 2027,
     }
 
-    bibtex = luo_bibtex_data(data)
+    io = IOHandler()
+    handler = BibTeXHandler(io)
+    bibtex = handler.luo_bibtex_data(data)
     print(bibtex)
