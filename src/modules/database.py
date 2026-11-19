@@ -37,7 +37,7 @@ class OhtuDatabase:
     # ?-merkit ovat sql-injektioita vastaan
     # IGNORE tarkoittaa, että ei lisätä olemassa olevaa
     
-    def lisaaViittaus(self, author, title, journal, year, doi):
+    def lisaaViittaus(self, author: str, title: str, journal: str | None, year: int | None, doi:str | None):
         self.cursor.execute("""
         INSERT OR IGNORE INTO reference (author, title, journal, year, doi) 
         VALUES (?, ?, ?, ?, ?)""",
