@@ -1,18 +1,7 @@
-from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QPushButton, QLineEdit)
+from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QListWidgetItem, QPushButton, QLineEdit)
 from PyQt6.QtCore import (Qt)
 
-sources = [
-    {"id": 0, "name": "Source A", "from": "Website", "writers": ["Alice Johnson", "Mark Lee"], "tags": ["technology", "ai", "news"]},
-    {"id": 1, "name": "Source B", "from": "Book", "writers": ["Elena Petrova"], "tags": ["history", "europe", "biography"]},
-    {"id": 2, "name": "Source C", "from": "Magazine", "writers": ["David Kim", "Alice Johnson"], "tags": ["design", "architecture", "technology"]},
-    {"id": 3, "name": "Source D", "from": "Podcast", "writers": ["Tom Becker"], "tags": ["economics", "interview", "news"]},
-    {"id": 4, "name": "Source E", "from": "Website", "writers": ["Priya Sharma", "Lucas Martin", "Elena Petrova"], "tags": ["science", "climate", "research"]},
-    {"id": 5, "name": "Source F", "from": "Journal", "writers": ["Dr. Oliver Grant"], "tags": ["science", "medicine", "research"]},
-    {"id": 6, "name": "Source G", "from": "Book", "writers": ["Maria Lopez", "James O'Connor"], "tags": ["fiction", "mystery", "history"]},
-    {"id": 7, "name": "Source H", "from": "Newspaper", "writers": ["Kenji Tanaka", "Mark Lee"], "tags": ["politics", "news", "opinion"]},
-    {"id": 8, "name": "Source I", "from": "Video", "writers": ["Emma Wilson"], "tags": ["tutorial", "programming", "ai"]},
-    {"id": 9, "name": "Source J", "from": "Website", "writers": [], "tags": ["travel", "food"]},
-]
+from modules.database import OhtuDatabase
 
 fields = [
     "author",
@@ -29,16 +18,19 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Hello, World!")
 
-        bar = Bar()
-        editor = SourceEditor()
-        viewer = SourceViewer()
+        self.database = OhtuDatabase()
+        self.database.luo_table()
+
+        self.bar = Bar()
+        self.editor = SourceEditor()
+        self.viewer = SourceViewer(self.database)
 
         split = QHBoxLayout()
-        split.addWidget(editor)
-        split.addWidget(viewer)
+        split.addWidget(self.editor)
+        split.addWidget(self.viewer)
 
         layout = QVBoxLayout()
-        layout.addWidget(bar)
+        layout.addWidget(self.bar)
         layout.addLayout(split)
 
         container = QWidget()
@@ -51,14 +43,21 @@ class Bar(QWidget):
         super().__init__()
         layout = QHBoxLayout();
 
-        layout.addWidget(QPushButton("add"))
-        layout.addWidget(QPushButton("edit"))
-        layout.addWidget(QPushButton("delete"))
-        layout.addWidget(QPushButton("uncheck"))
+        self.add_button = QPushButton("add")
+        layout.addWidget(self.add_button)
 
-        search = QLineEdit()
-        search.setPlaceholderText("search")
-        layout.addWidget(search)
+        self.edit_button = QPushButton("edit")
+        layout.addWidget(self.edit_button)
+
+        self.delete_button = QPushButton("delete")
+        layout.addWidget(self.delete_button)
+
+        self.uncheck_button = QPushButton("uncheck")
+        layout.addWidget(self.uncheck_button)
+
+        self.search_input = QLineEdit()
+        self.search_input.setPlaceholderText("search")
+        layout.addWidget(self.search_input)
 
         self.setLayout(layout)
 
@@ -69,20 +68,39 @@ class SourceEditor(QWidget):
 
         layout.setSpacing(5)
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.inputs = {}
         for field in fields:
             line = QLineEdit()
             line.setPlaceholderText(field)
             line.setAlignment(Qt.AlignmentFlag.AlignTop)
             layout.addWidget(line)
+            self.inputs[field] = line
 
         self.setLayout(layout)
 
 class SourceViewer(QListWidget):
-    def __init__(self):
+    def __init__(self, database: OhtuDatabase):
         super().__init__()
-        for source in sources:
-            self.addItem(f"{source['name']} — {source['from']}")
+        # // Display database references as Source list items.
+        for reference in database.haeViittaus():
+            self.addItem(Source(*reference))
 
-class Source(QWidget):
-    def __init__(self):
-        super().__init__()
+class Source(QListWidgetItem):
+    def __init__(
+        self,
+        source_id: int,
+        author: str,
+        title: str,
+        journal: str | None,
+        year: int | None,
+        doi: str | None,
+    ):
+        details = [value for value in (author, journal, str(year) if year is not None else None) if value]
+        super().__init__(f"{title} — {', '.join(details)}")
+        # // Keep the database ID on each item for future selection and editing actions.
+        self.id = source_id
+        self.author = author
+        self.title = title
+        self.journal = journal
+        self.year = year
+        self.doi = doi

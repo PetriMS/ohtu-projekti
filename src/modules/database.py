@@ -44,9 +44,30 @@ class OhtuDatabase:
         (author, title, journal, year, doi))
         self.conn.commit()
 
-    def haeViittaus(self) -> list[tuple[str, str, str | None, int | None, str | None]]:
+    def haeViittaus(self) -> list[tuple[int, str, str, str | None, int | None, str | None]]:
         self.cursor.execute("SELECT * FROM reference")
         return self.cursor.fetchall()
+
+
+def init_database() -> None:
+    # // Create the database table and add example references.
+    db = OhtuDatabase()
+    db.luo_table()
+    db.lisaaViittaus(
+        "Bell, J. S.",
+        "On the Einstein Podolsky Rosen Paradox",
+        "Physics Physique Fizika",
+        1964,
+        "10.1103/PhysicsPhysiqueFizika.1.195",
+    )
+    db.lisaaViittaus(
+        "Shannon, C. E.",
+        "A Mathematical Theory of Communication",
+        "The Bell System Technical Journal",
+        1948,
+        "10.1002/j.1538-7305.1948.tb01338.x",
+    )
+    print("Database initialized with example references.")
 
 # Kommentoikaa pois, näin testausta varten
 # """
