@@ -1,5 +1,6 @@
 import unittest
-from modules.bibtex import *
+from modules.bibtex import BibTeXHandler
+from modules.io_handler import IOHandler
 
 class TestBibTeX(unittest.TestCase):
     def setUp(self):
@@ -13,5 +14,8 @@ class TestBibTeX(unittest.TestCase):
             "title": "Can Quantum-Mechanical Description of Physical Reality Be Considered Complete?",
             "year": 1935,
         }
-        bibtex = luo_bibtex_data(data)
+
+        io = IOHandler()
+        handler = BibTeXHandler(io)
+        bibtex = handler.luo_bibtex_data(data)
         self.assertIn(data["title"], bibtex)
