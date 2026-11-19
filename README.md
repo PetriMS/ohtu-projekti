@@ -42,4 +42,4 @@ uv run python src/main.py
 ```
 
 ## Database
-![Database_kuva](UI_kuvat/Databasekaavio_vaiheessa.png)
+![Database_kuva](UI_kuvat/Database_parempi.png)
