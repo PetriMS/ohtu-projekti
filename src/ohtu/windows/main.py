@@ -69,6 +69,14 @@ class TopBar(QHBoxLayout):
         search.setPlaceholderText("search")
         self.addWidget(search)
 
-class SourceEditor(QWidget):
+class SourceEditor(QVBoxLayout):
+    def __init__(self):
+        super().__init__()
+
+class SourceViewer(QListWidget):
+    def __init__(self):
+        super().__init__()
+
+class Source(QWidget):
     def __init__(self):
         super().__init__()
