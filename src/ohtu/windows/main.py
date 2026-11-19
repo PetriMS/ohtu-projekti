@@ -1,4 +1,5 @@
 from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QPushButton, QLineEdit)
+from PyQt6.QtCore import (Qt)
 
 sources = [
     {"id": 0, "name": "Source A", "from": "Website", "writers": ["Alice Johnson", "Mark Lee"], "tags": ["technology", "ai", "news"]},
@@ -23,31 +24,28 @@ fields = [
     "id",
 ]
 
-buttons = [
-    "add",
-    "edit",
-    "delete",
-    "uncheck",
-];
-
-
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Hello, World!")
 
         bar = QHBoxLayout()
-        for button in buttons:
-            bar.addWidget(QPushButton(button))
+        bar.addWidget(QPushButton("add"))
+        bar.addWidget(QPushButton("edit"))
+        bar.addWidget(QPushButton("delete"))
+        bar.addWidget(QPushButton("uncheck"))
 
         search = QLineEdit()
         search.setPlaceholderText("search")
         bar.addWidget(search)
     
         fields_list = QVBoxLayout()
+        fields_list.setSpacing(5);
+        fields_list.setAlignment(Qt.AlignmentFlag.AlignTop)
         for field in fields:
             line = QLineEdit()
             line.setPlaceholderText(field)
+            line.setAlignment(Qt.AlignmentFlag.AlignTop);
             fields_list.addWidget(line)
 
         
@@ -67,3 +65,7 @@ class MainWindow(QMainWindow):
         container.setLayout(layout)
         self.setCentralWidget(container)
         self.show()
+
+class TopBar(QWidget):
+    def __init__(self):
+        super().__init__()
