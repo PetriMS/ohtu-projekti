@@ -29,53 +29,59 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Hello, World!")
 
-        bar = TopBar()
+        bar = Bar()
+        editor = SourceEditor()
+        viewer = SourceViewer()
 
-        fields_list = QVBoxLayout()
-        fields_list.setSpacing(5)
-        fields_list.setAlignment(Qt.AlignmentFlag.AlignTop)
-        for field in fields:
-            line = QLineEdit()
-            line.setPlaceholderText(field)
-            line.setAlignment(Qt.AlignmentFlag.AlignTop)
-            fields_list.addWidget(line)
-
-        source_list = QListWidget()
-        for source in sources:
-            source_list.addItem(f"{source['name']} — {source['from']}")
-
-        view = QHBoxLayout()
-        view.addLayout(fields_list)
-        view.addWidget(source_list)
+        split = QHBoxLayout()
+        split.addWidget(editor)
+        split.addWidget(viewer)
 
         layout = QVBoxLayout()
-        layout.addLayout(bar)
-        layout.addLayout(view)
+        layout.addWidget(bar)
+        layout.addLayout(split)
 
         container = QWidget()
         container.setLayout(layout)
         self.setCentralWidget(container)
         self.show()
 
-class TopBar(QHBoxLayout):
+class Bar(QWidget):
     def __init__(self):
         super().__init__()
-        self.addWidget(QPushButton("add"))
-        self.addWidget(QPushButton("edit"))
-        self.addWidget(QPushButton("delete"))
-        self.addWidget(QPushButton("uncheck"))
+        layout = QHBoxLayout();
+
+        layout.addWidget(QPushButton("add"))
+        layout.addWidget(QPushButton("edit"))
+        layout.addWidget(QPushButton("delete"))
+        layout.addWidget(QPushButton("uncheck"))
 
         search = QLineEdit()
         search.setPlaceholderText("search")
-        self.addWidget(search)
+        layout.addWidget(search)
 
-class SourceEditor(QVBoxLayout):
+        self.setLayout(layout)
+
+class SourceEditor(QWidget):
     def __init__(self):
         super().__init__()
+        layout = QVBoxLayout();
+
+        layout.setSpacing(5)
+        layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        for field in fields:
+            line = QLineEdit()
+            line.setPlaceholderText(field)
+            line.setAlignment(Qt.AlignmentFlag.AlignTop)
+            layout.addWidget(line)
+
+        self.setLayout(layout)
 
 class SourceViewer(QListWidget):
     def __init__(self):
         super().__init__()
+        for source in sources:
+            self.addItem(f"{source['name']} — {source['from']}")
 
 class Source(QWidget):
     def __init__(self):
