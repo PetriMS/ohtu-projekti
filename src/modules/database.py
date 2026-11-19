@@ -13,8 +13,7 @@ Esimerkki dataa:
 
 import sqlite3
 
-# Suoraan tekoälyltä kysyttynä, jos references ei ole olemassa, luo sen 
-# automaattisesti
+# Jos references ei ole olemassa, luo sen automaattisesti
 # Muokataan tehdessä paremmaksi
 class OhtuDatabase:
     def __init__(self):
@@ -48,4 +47,28 @@ class OhtuDatabase:
     def haeViittaus(self):
         self.cursor.execute("SELECT * FROM reference")
         return self.cursor.fetchall()
-        
+"""    
+    
+if __name__ == "__main__":
+    db = OhtuDatabase()
+    db.luo_table()
+    db.lisaaViittaus(
+    "Bell, J. S.",
+    "On the Einstein Podolsky Rosen Paradox",
+    "Physics Physique Fizika",
+    1964,
+    "10.1103/PhysicsPhysiqueFizika.1.195"
+    )
+
+    db.lisaaViittaus(
+    "Shannon, C. E.",
+    "A Mathematical Theory of Communication",
+    "The Bell System Technical Journal",
+    1948,
+    "10.1002/j.1538-7305.1948.tb01338.x"
+    )
+    viittaukset = db.haeViittaus()
+    for viittaus in viittaukset:
+        print(viittaus)
+
+"""
