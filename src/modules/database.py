@@ -35,10 +35,11 @@ class OhtuDatabase:
         self.conn.commit()
     
     # ?-merkit ovat sql-injektioita vastaan
+    # IGNORE tarkoittaa, että ei lisätä olemassa olevaa
     
     def lisaaViittaus(self, author, title, journal, year, doi):
         self.cursor.execute("""
-        INSERT INTO reference (author, title, journal, year, doi) 
+        INSERT OR IGNORE INTO reference (author, title, journal, year, doi) 
         VALUES (?, ?, ?, ?, ?)""",
         (author, title, journal, year, doi))
         self.conn.commit()
@@ -47,8 +48,9 @@ class OhtuDatabase:
     def haeViittaus(self):
         self.cursor.execute("SELECT * FROM reference")
         return self.cursor.fetchall()
-"""    
-    
+
+# Kommentoikaa pois, näin testausta varten
+# """
 if __name__ == "__main__":
     db = OhtuDatabase()
     db.luo_table()
@@ -71,4 +73,4 @@ if __name__ == "__main__":
     for viittaus in viittaukset:
         print(viittaus)
 
-"""
+#"""
