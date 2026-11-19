@@ -48,7 +48,9 @@ class OhtuDatabase:
     def haeViittaus(self):
         self.cursor.execute("SELECT * FROM reference")
         return self.cursor.fetchall()
-    
+
+# Kommentoikaa pois, näin testausta varten
+# """
 if __name__ == "__main__":
     db = OhtuDatabase()
     db.luo_table()
@@ -71,3 +73,4 @@ if __name__ == "__main__":
     for viittaus in viittaukset:
         print(viittaus)
 
+#"""
