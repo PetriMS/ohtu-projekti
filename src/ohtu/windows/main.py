@@ -6,7 +6,6 @@ from typing import final
 from modules import database
 from modules.database import OhtuDatabase
 from modules.bibtex import BibTeXHandler 
-from modules.io_handler import IOHandler 
 
 fields = [
     "author",
@@ -26,8 +25,6 @@ class MainWindow(QMainWindow):
 
         self.handler = halder
         self.database = database
-
-        self.database.create_table()
 
         self.bar = Bar()
         _ = self.bar.export_button.clicked.connect(self.on_export)
@@ -50,8 +47,8 @@ class MainWindow(QMainWindow):
 
     def on_export(self):
         print("exporting")
-        self.bibtex_handler.luo_bibtex_data()
-        self.bibtex_handler.tallenna_tiedostoon()
+        biptext: str = self.handler.create_bibtex_data(database.get_references())
+        self.handler.save_to_file("./test_biptext.bip", biptext)
         # for reference in self.database.haeViittaus():
         #     self.addItem(Source(*reference))
 
