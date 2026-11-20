@@ -4,7 +4,6 @@ from PyQt6.QtGui import QAction
 
 from typing import final
 
-from modules import database
 from modules.database import OhtuDatabase
 from modules.bibtex import BibTeXHandler 
 
@@ -63,11 +62,16 @@ class MainWindow(QMainWindow):
         help_menu.addAction(about_action)
 
     def on_export(self):
+<<<<<<< HEAD
         print("exporting")
         biptext: str = self.handler.create_bibtex_data(database.get_references())
         self.handler.save_to_file("./test_biptext.bip", biptext)
         # for reference in self.database.haeViittaus():
         #     self.addItem(Source(*reference))
+=======
+        biptext: str = self.handler.create_bibtex_data(self.database.get_references())
+        self.handler.save_to_file(biptext, "./test_biptext.bip")
+>>>>>>> 9ca4472ea831382a3bc9cfb74f3012d1553690a1
 
 @final
 class Bar(QWidget):
