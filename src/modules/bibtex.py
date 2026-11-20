@@ -15,14 +15,15 @@ Esimerkki dataa:
 
 
 from modules.io_handler import IOHandler
+from typing import final
 
-
+@final
 class BibTeXHandler:
     """
     Luokka BibTeX-datan hallintaan
     """
 
-    def __init__(self, io):
+    def __init__(self, io: IOHandler):
         self.io = io
 
     def create_bibtex_data(self, entries: list[tuple[int, str, str, str | None, int | None, str | None]]):
