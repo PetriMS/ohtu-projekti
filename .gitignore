@@ -1,3 +1,9 @@
+# Databases
+*.db
+*.db-wal
+*.sqlite
+*.sqlite-wal
+
 # Bip
 *.bip
 
