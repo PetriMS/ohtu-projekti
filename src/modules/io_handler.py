@@ -1,10 +1,15 @@
 import pathlib
 
+from typing import final
 
+@final
 class IOHandler:
     """
     IO-käsittelijä.
     """
+
+    def __init__(self):
+        pass
 
     def console_read_input(self, text: str):
         """
@@ -37,4 +42,4 @@ class IOHandler:
         path = pathlib.Path(file_path)
 
         with path.open(mode="w") as f:
-            f.write(data)
+            _ = f.write(data)
