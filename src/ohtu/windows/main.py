@@ -9,11 +9,9 @@ from modules.bibtex import BibTeXHandler
 fields = [
     "author",
     "title",
-    "publisher",
-    "address",
+    "journal",
     "year",
-    "tag",
-    "id",
+    "doi",
 ]
 
 @final
@@ -27,6 +25,7 @@ class MainWindow(QMainWindow):
 
         self.bar = Bar()
         _ = self.bar.export_button.clicked.connect(self.on_export)
+        _ = self.bar.add_button.clicked.connect(self.on_add)
 
         self.editor = SourceEditor()
         self.viewer = SourceViewer(self.database)
@@ -47,6 +46,31 @@ class MainWindow(QMainWindow):
     def on_export(self):
         biptext: str = self.handler.create_bibtex_data(self.database.get_references())
         self.handler.save_to_file(biptext, "./test_biptext.bip")
+
+    def on_add(self):
+        print ("add on painettu")
+        values = {name: line.text().strip() for name, line in self.editor.inputs.items()}
+
+        if not values["author"] or not values["title"]:
+            print("author ja title ovat pakollisia")
+            return
+
+        year = int(values["year"]) if values["year"].isdigit() else None
+
+        self.database.add_reference(
+            values["author"],
+            values["title"],
+            values["journal"] or None,
+            year,
+            values["doi"] or None,
+        )
+
+        for line in self.editor.inputs.values():
+            line.clear()
+
+        self.viewer.refresh()
+
+        
 
 @final
 class Bar(QWidget):
@@ -96,8 +120,13 @@ class SourceEditor(QWidget):
 class SourceViewer(QListWidget):
     def __init__(self, database: OhtuDatabase):
         super().__init__()
+        self.database = database
+        self.refresh()
+
+    def refresh(self):
+        self.clear()
         # // Display database references as Source list items.
-        for reference in database.get_references():
+        for reference in self.database.get_references():
             self.addItem(Source(*reference))
 
 @final
