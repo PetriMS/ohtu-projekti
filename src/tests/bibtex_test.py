@@ -17,5 +17,5 @@ class TestBibTeX(unittest.TestCase):
 
         io = IOHandler()
         handler = BibTeXHandler(io)
-        bibtex = handler.luo_bibtex_data(data)
+        bibtex = handler.create_bibtex_data(data)
         self.assertIn(data["title"], bibtex)
