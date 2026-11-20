@@ -12,7 +12,7 @@ def main() -> None:
     database = OhtuDatabase()
     database.create_table()
 
-    handler = BibTeXHandler(IOHandler)
+    handler = BibTeXHandler(IOHandler())
     _ = MainWindow(database, handler)
 
     _ = app.exec()
