@@ -70,3 +70,7 @@ uv run init_database
 ```
 
 ![Database_kuva](UI_kuvat/Database_parempi.png)
+
+## Backlog
+
+https://docs.google.com/spreadsheets/d/1CUKP8nsRdaTxp9El2b2zLZC0YImahDFkzQHll-x9INw/edit?gid=0#gid=0
