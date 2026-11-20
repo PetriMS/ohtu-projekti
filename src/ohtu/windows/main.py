@@ -48,7 +48,7 @@ class MainWindow(QMainWindow):
     def on_export(self):
         print("exporting")
         biptext: str = self.handler.create_bibtex_data(self.database.get_references())
-        self.handler.save_to_file(biptext, "./test_biptext.bip")
+        self.handler.save_to_file("./test_biptext.bip", biptext)
         # for reference in self.database.haeViittaus():
         #     self.addItem(Source(*reference))
 
