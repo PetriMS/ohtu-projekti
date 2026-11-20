@@ -29,7 +29,7 @@ class MainWindow(QMainWindow):
         _ = self.bar.add_button.clicked.connect(self.on_add)
 
         self.editor = SourceEditor()
-        self.viewer = SourceViewer(self.database)
+        self.viewer = SourceViewer(self.database.get_references())
 
         split = QHBoxLayout()
         split.addWidget(self.editor)
@@ -85,9 +85,7 @@ class MainWindow(QMainWindow):
         for line in self.editor.inputs.values():
             line.clear()
 
-        self.viewer.refresh()
-
-        
+        self.viewer.refresh(self.database.get_references())
 
 @final
 class Bar(QWidget):
@@ -135,16 +133,13 @@ class SourceEditor(QWidget):
         self.setLayout(layout)
 
 class SourceViewer(QListWidget):
-    def __init__(self, database: OhtuDatabase):
+    def __init__(self, references: list[dict[str, str | int | None]]):
         super().__init__()
-        self.database = database
-        self.refresh()
+        self.refresh(references)
 
-    def refresh(self):
+    def refresh(self, references: list[dict[str, str | int | None]]):
         self.clear()
-        # // Display database references as Source list items.
-        # TODO
-        for reference in self.database.get_references():
+        for reference in references:
             self.addItem(Source(**reference))
 
 @final
