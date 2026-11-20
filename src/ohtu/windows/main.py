@@ -25,6 +25,8 @@ class MainWindow(QMainWindow):
         self.database.luo_table()
 
         self.bar = Bar()
+        _ = self.bar.export_button.clicked.connect(self.on_export)
+
         self.editor = SourceEditor()
         self.viewer = SourceViewer(self.database)
 
@@ -41,11 +43,17 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(container)
         self.show()
 
+    def on_export(self):
+        print("hello")
+
 @final
 class Bar(QWidget):
     def __init__(self):
         super().__init__()
         layout = QHBoxLayout();
+
+        self.export_button = QPushButton("export")
+        layout.addWidget(self.export_button)
 
         self.add_button = QPushButton("add")
         layout.addWidget(self.add_button)
