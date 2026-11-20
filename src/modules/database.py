@@ -62,7 +62,7 @@ def init_database() -> None:
         1964,
         "10.1103/PhysicsPhysiqueFizika.1.195",
     )
-    db.lisaaViittaus(
+    db.add_reference(
         "Shannon, C. E.",
         "A Mathematical Theory of Communication",
         "The Bell System Technical Journal",
@@ -91,8 +91,8 @@ if __name__ == "__main__":
     1948,
     "10.1002/j.1538-7305.1948.tb01338.x"
     )
-    viittaukset = db.get_references()
-    for viittaus in viittaukset:
-        print(viittaus)
+    references = db.get_references()
+    for reference in references:
+        print(reference)
 
 #"""
