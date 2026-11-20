@@ -1,6 +1,8 @@
 from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QListWidgetItem, QPushButton, QLineEdit)
 from PyQt6.QtCore import (Qt)
 
+from typing import final
+
 from modules.database import OhtuDatabase
 
 fields = [
@@ -13,6 +15,7 @@ fields = [
     "id",
 ]
 
+@final
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -38,6 +41,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(container)
         self.show()
 
+@final
 class Bar(QWidget):
     def __init__(self):
         super().__init__()
@@ -61,6 +65,7 @@ class Bar(QWidget):
 
         self.setLayout(layout)
 
+@final
 class SourceEditor(QWidget):
     def __init__(self):
         super().__init__()
@@ -68,7 +73,7 @@ class SourceEditor(QWidget):
 
         layout.setSpacing(5)
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self.inputs = {}
+        self.inputs: dict[str, QLineEdit] = {} 
         for field in fields:
             line = QLineEdit()
             line.setPlaceholderText(field)
@@ -85,6 +90,7 @@ class SourceViewer(QListWidget):
         for reference in database.haeViittaus():
             self.addItem(Source(*reference))
 
+@final
 class Source(QListWidgetItem):
     def __init__(
         self,
