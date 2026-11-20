@@ -20,12 +20,13 @@ fields = [
 
 @final
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, database: OhtuDatabase, halder: BibTeXHandler):
         super().__init__()
         self.setWindowTitle("Hello, World!")
 
-        self.bibtex_handler = BibTeXHandler(IOHandler())
-        self.database = OhtuDatabase()
+        self.handler = halder
+        self.database = database
+
         self.database.create_table()
 
         self.bar = Bar()
@@ -49,6 +50,8 @@ class MainWindow(QMainWindow):
 
     def on_export(self):
         print("exporting")
+        self.bibtex_handler.luo_bibtex_data()
+        self.bibtex_handler.tallenna_tiedostoon()
         # for reference in self.database.haeViittaus():
         #     self.addItem(Source(*reference))
 
