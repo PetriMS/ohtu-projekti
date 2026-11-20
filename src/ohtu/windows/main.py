@@ -21,7 +21,7 @@ fields = [
 class MainWindow(QMainWindow):
     def __init__(self, database: OhtuDatabase, halder: BibTeXHandler):
         super().__init__()
-        self.setWindowTitle("Hello, World!")
+        self.setWindowTitle("Ohtu")
 
         self.handler = halder
         self.database = database
