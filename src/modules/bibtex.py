@@ -25,45 +25,45 @@ class BibTeXHandler:
     def __init__(self, io):
         self.io = io
 
-    def luo_bibtex_data(self, data: dict):
+    def create_bibtex_data(self, data: dict):
         """
         Muodostetaan BibTeX-sisältö datan perusteella.
-        Datassa pitää olla vähintäänkin tyyppi ja tunnus.
+        Datassa pitää olla vähintäänkin type ja key.
         """
-        self.validoi(data)
+        self.validate(data)
 
-        tyyppi = data["tyyppi"]
-        tunnus = data["tunnus"]
+        type = data["type"]
+        key = data["key"]
 
         content = ""
         for key in data:
-            # Käsitellään kaikki kentät paitsi tunnus ja lähteen tyyppi
-            if key not in ["tyyppi", "tunnus"]:
+            # Käsitellään kaikki kentät paitsi key ja lähteen type
+            if key not in ["type", "key"]:
                 content += f"    {key} = {{{data[key]}}},\n"
 
-        return f"""@{tyyppi}{{{tunnus}\n{content}}}"""
+        return f"""@{type}{{{key}\n{content}}}"""
 
-    def validoi(self, data: dict):
+    def validate(self, data: dict):
         """
         Validoidaan data,
-        esim. tunnuksessa ei saa olla välilyöntejä tms.
+        esim. key:ssa ei saa olla välilyöntejä tms.
         """
-        if " " in data["tunnus"]:
+        if " " in data["key"]:
             # TODO
-            raise ValueError("Tunnus sisältää välilyöntejä")
+            raise ValueError("Key sisältää välilyöntejä")
 
-    def tallenna_tiedostoon(self, filepath: str, bibtex_data: str):
+    def save_to_file(self, filepath: str, bibtex_data: str):
         """
         Tallennetaan BibTeX-muotoinen data tiedostoon.
         """
-        io.write_file(bibtex_data, filepath)
+        self.io.write_file(bibtex_data, filepath)
 
 
 # Testi kehitysympäristössä
 if __name__ == "__main__":
     data = {
-        "tyyppi": "book",
-        "tunnus": "kirja123",
+        "type": "book",
+        "key": "kirja123",
         "author": "Einstein, A.",
         "title": "Kirja",
         "journal": "tiedelehti",
@@ -72,5 +72,5 @@ if __name__ == "__main__":
 
     io = IOHandler()
     handler = BibTeXHandler(io)
-    bibtex = handler.luo_bibtex_data(data)
+    bibtex = handler.create_bibtex_data(data)
     print(bibtex)

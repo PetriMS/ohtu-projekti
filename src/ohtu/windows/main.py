@@ -26,7 +26,7 @@ class MainWindow(QMainWindow):
 
         self.bibtex_handler = BibTeXHandler(IOHandler())
         self.database = OhtuDatabase()
-        self.database.luo_table()
+        self.database.create_table()
 
         self.bar = Bar()
         _ = self.bar.export_button.clicked.connect(self.on_export)
@@ -101,7 +101,7 @@ class SourceViewer(QListWidget):
     def __init__(self, database: OhtuDatabase):
         super().__init__()
         # // Display database references as Source list items.
-        for reference in database.haeViittaus():
+        for reference in database.get_references():
             self.addItem(Source(*reference))
 
 @final
