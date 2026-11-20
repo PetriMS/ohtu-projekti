@@ -20,6 +20,7 @@ from typing import final
 class OhtuDatabase:
     def __init__(self):
         self.conn = sqlite3.connect("references.db")
+        self.conn.row_factory = sqlite3.Row
         self.cursor = self.conn.cursor()
         # tietokannan luominen tms..
         
@@ -46,9 +47,11 @@ class OhtuDatabase:
         (author, title, journal, year, doi))
         self.conn.commit()
 
-    def get_references(self) -> list[tuple[int, str, str, str | None, int | None, str | None]]:
+    def get_references(self) -> list[dict[str, str | int | None]]:
         _ = self.cursor.execute("SELECT * FROM reference")
-        return self.cursor.fetchall()
+        data: list[sqlite3.Row] = self.cursor.fetchall()
+        # Convert to a list of dicts
+        return [dict(row) for row in data]
 
 
 def init_database() -> None:

@@ -143,14 +143,19 @@ class SourceViewer(QListWidget):
     def refresh(self):
         self.clear()
         # // Display database references as Source list items.
+        # TODO
         for reference in self.database.get_references():
-            self.addItem(Source(*reference))
+            self.addItem(Source(**reference))
 
 @final
 class Source(QListWidgetItem):
+    """
+    Source data model.
+    TODO: tää omaksi tiedostoksi ja sinne kaikki bibtex kentät, alustavasti None. MVC-arkkitehtuuri?
+    """
     def __init__(
         self,
-        source_id: int,
+        id: int,
         author: str,
         title: str,
         journal: str | None,
@@ -160,7 +165,7 @@ class Source(QListWidgetItem):
         details = [value for value in (author, journal, str(year) if year is not None else None) if value]
         super().__init__(f"{title} — {', '.join(details)}")
         # // Keep the database ID on each item for future selection and editing actions.
-        self.id = source_id
+        self.id = id
         self.author = author
         self.title = title
         self.journal = journal
