@@ -17,6 +17,7 @@ Esimerkki dataa:
 from modules.io_handler import IOHandler
 from typing import final
 
+
 @final
 class BibTeXHandler:
     """
@@ -26,7 +27,7 @@ class BibTeXHandler:
     def __init__(self, io: IOHandler):
         self.io = io
 
-    def create_bibtex_data(self, entries: list[tuple[int, str, str, str | None, int | None, str | None]]):
+    def create_bibtex_data(self, entries: list[dict]):
         """
         Create BibTeX data from database entries (rows)
         """
@@ -40,13 +41,12 @@ class BibTeXHandler:
 
         for entry in entries:
             type = "book"
-            id = entry[0]
+            id = entry['id']
 
             content = ""
-            for i in range(1, len(entry)):
-                key = keys[i]
-                value = entry[i]
-                content += f"    {key} = {{{value}}},\n"
+            for key, value in entry.items():
+                if key not in ["id"]:
+                    content += f"    {key} = {{{value}}},\n"
 
             output += f"""@{type}{{{id}\n{content}}}\n"""
 
@@ -71,25 +71,17 @@ class BibTeXHandler:
 
 # Testi kehitysympäristössä
 if __name__ == "__main__":
-    data = {
-        "type": "book",
-        "key": "kirja123",
-        "author": "Einstein, A.",
-        "title": "Kirja",
-        "journal": "tiedelehti",
-        "year": 2027,
-    }
-    """
-    init_database()
+    data = [{'id': 1, 'author': 'Bell, J. S.', 'title': 'On the Einstein Podolsky Rosen Paradox', 'journal': 'Physics Physique Fizika', 'year': 1964, 'doi': '10.1103/PhysicsPhysiqueFizika.1.195'},
+            {'id': 2, 'author': 'Shannon, C. E.', 'title': 'A Mathematical Theory of Communication', 'journal': 'The Bell System Technical Journal', 'year': 1948, 'doi': '10.1002/j.1538-7305.1948.tb01338.x'}]
 
+    from modules.database import OhtuDatabase
     db = OhtuDatabase()
     io = IOHandler()
     handler = BibTeXHandler(io)
 
     viittaukset = db.get_references()
-    # for viittaus in viittaukset:
-    #     print(viittaus)
+    print(viittaukset)
+    print()
 
     bibtex = handler.create_bibtex_data(viittaukset)
     io.console_print(bibtex)
-    """
