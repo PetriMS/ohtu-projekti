@@ -23,7 +23,7 @@ class OhtuDatabase:
         self.cursor = self.conn.cursor()
         # tietokannan luominen tms..
         
-    def luo_table(self):
+    def create_table(self):
         _ = self.cursor.execute("""
         CREATE TABLE IF NOT EXISTS reference (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,14 +39,14 @@ class OhtuDatabase:
     # ?-merkit ovat sql-injektioita vastaan
     # IGNORE tarkoittaa, että ei lisätä olemassa olevaa
     
-    def lisaaViittaus(self, author: str, title: str, journal: str | None, year: int | None, doi: str | None):
+    def add_reference(self, author: str, title: str, journal: str | None, year: int | None, doi: str | None):
         _ = self.cursor.execute("""
         INSERT OR IGNORE INTO reference (author, title, journal, year, doi)
         VALUES (?, ?, ?, ?, ?)""",
         (author, title, journal, year, doi))
         self.conn.commit()
 
-    def haeViittaus(self) -> list[tuple[int, str, str, str | None, int | None, str | None]]:
+    def get_references(self) -> list[tuple[int, str, str, str | None, int | None, str | None]]:
         _ = self.cursor.execute("SELECT * FROM reference")
         return self.cursor.fetchall()
 
@@ -54,8 +54,8 @@ class OhtuDatabase:
 def init_database() -> None:
     # // Create the database table and add example references.
     db = OhtuDatabase()
-    db.luo_table()
-    db.lisaaViittaus(
+    db.create_table()
+    db.add_reference(
         "Bell, J. S.",
         "On the Einstein Podolsky Rosen Paradox",
         "Physics Physique Fizika",
@@ -75,8 +75,8 @@ def init_database() -> None:
 # """
 if __name__ == "__main__":
     db = OhtuDatabase()
-    db.luo_table()
-    db.lisaaViittaus(
+    db.create_table()
+    db.add_reference(
     "Bell, J. S.",
     "On the Einstein Podolsky Rosen Paradox",
     "Physics Physique Fizika",
@@ -84,14 +84,14 @@ if __name__ == "__main__":
     "10.1103/PhysicsPhysiqueFizika.1.195"
     )
 
-    db.lisaaViittaus(
+    db.add_reference(
     "Shannon, C. E.",
     "A Mathematical Theory of Communication",
     "The Bell System Technical Journal",
     1948,
     "10.1002/j.1538-7305.1948.tb01338.x"
     )
-    viittaukset = db.haeViittaus()
+    viittaukset = db.get_references()
     for viittaus in viittaukset:
         print(viittaus)
 
