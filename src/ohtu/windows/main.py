@@ -22,7 +22,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Hello, World!")
 
         self.database = OhtuDatabase()
-        self.database.luo_table()
+        self.database.create_table()
 
         self.bar = Bar()
         self.editor = SourceEditor()
@@ -87,7 +87,7 @@ class SourceViewer(QListWidget):
     def __init__(self, database: OhtuDatabase):
         super().__init__()
         # // Display database references as Source list items.
-        for reference in database.haeViittaus():
+        for reference in database.get_references():
             self.addItem(Source(*reference))
 
 @final
