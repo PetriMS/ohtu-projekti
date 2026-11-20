@@ -3,7 +3,10 @@ from PyQt6.QtCore import (Qt)
 
 from typing import final
 
+from modules import database
 from modules.database import OhtuDatabase
+from modules.bibtex import BibTeXHandler 
+from modules.io_handler import IOHandler 
 
 fields = [
     "author",
@@ -21,6 +24,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Hello, World!")
 
+        self.bibtex_handler = BibTeXHandler(IOHandler())
         self.database = OhtuDatabase()
         self.database.luo_table()
 
@@ -44,7 +48,9 @@ class MainWindow(QMainWindow):
         self.show()
 
     def on_export(self):
-        print("hello")
+        print("exporting")
+        # for reference in self.database.haeViittaus():
+        #     self.addItem(Source(*reference))
 
 @final
 class Bar(QWidget):
