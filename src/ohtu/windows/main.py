@@ -1,5 +1,6 @@
 from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QListWidgetItem, QPushButton, QLineEdit)
 from PyQt6.QtCore import (Qt)
+from PyQt6.QtGui import QAction
 
 from typing import final
 
@@ -43,11 +44,27 @@ class MainWindow(QMainWindow):
         container = QWidget()
         container.setLayout(layout)
         self.setCentralWidget(container)
+        self.create_menu()
         self.show()
+        
+    def create_menu(self):
+        menu_bar = self.menuBar()
+
+        file_menu = menu_bar.addMenu("File")
+        help_menu = menu_bar.addMenu("Help")
+
+        export_action = QAction("Export", self)
+        import_action = QAction("Import", self)
+        about_action = QAction("About", self)
+
+        file_menu.addAction(import_action)
+        file_menu.addAction(export_action)
+
+        help_menu.addAction(about_action)
 
     def on_export(self):
         print("exporting")
-        biptext: str = self.handler.create_bibtex_data(database.get_references())
+        biptext: str = self.handler.create_bibtex_data(self.database.get_references())
         self.handler.save_to_file("./test_biptext.bip", biptext)
         # for reference in self.database.haeViittaus():
         #     self.addItem(Source(*reference))
