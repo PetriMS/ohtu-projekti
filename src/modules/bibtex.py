@@ -61,7 +61,7 @@ class BibTeXHandler:
             # TODO
             raise ValueError("Key sisältää välilyöntejä")
 
-    def save_to_file(self, filepath: str, bibtex_data: str):
+    def save_to_file(self, bibtex_data: str, filepath: str):
         """
         Saves the data to a file.
         """
