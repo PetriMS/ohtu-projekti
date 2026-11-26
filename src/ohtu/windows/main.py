@@ -1,5 +1,5 @@
-from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QListWidgetItem, QPushButton, QLineEdit, QMessageBox)
-from PyQt6.QtCore import (Qt)
+from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QListWidgetItem, QPushButton, QLineEdit, QMessageBox, QDateEdit)
+from PyQt6.QtCore import (Qt, QDate)
 from PyQt6.QtGui import QAction
 
 from typing import final
@@ -17,7 +17,6 @@ class MainWindow(QMainWindow):
         self.database = database
 
         self.bar = Bar()
-        _ = self.bar.export_button.clicked.connect(self.on_export)
         _ = self.bar.add_button.clicked.connect(self.on_add)
 
         self.editor = SourceEditor()
@@ -45,6 +44,7 @@ class MainWindow(QMainWindow):
         help_menu = menu_bar.addMenu("Help")
 
         export_action = QAction("Export", self)
+        _ = export_action.triggered.connect(self.on_export)
         import_action = QAction("Import", self)
         about_action = QAction("About", self)
 
@@ -63,7 +63,6 @@ class MainWindow(QMainWindow):
         author = self.editor.author_input.text().strip()
         title = self.editor.title_input.text().strip()
         journal = self.editor.journal_input.text().strip()
-        year_text = self.editor.year_input.text().strip()
         doi = self.editor.doi_input.text().strip()
 
         if not author:
@@ -76,7 +75,7 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Virheilmoitus", "tag is missing.")
             return
 
-        year = int(year_text) if year_text.isdigit() else None
+        year = self.editor.year_input.date().year()
 
         self.database.add_reference(
             tag,
@@ -91,7 +90,7 @@ class MainWindow(QMainWindow):
         self.editor.author_input.clear()
         self.editor.title_input.clear()
         self.editor.journal_input.clear()
-        self.editor.year_input.clear()
+        self.editor.year_input.setDate(QDate.currentDate())
         self.editor.doi_input.clear()
 
         self.viewer.refresh(self.database.get_references())
@@ -102,9 +101,6 @@ class Bar(QWidget):
     def __init__(self):
         super().__init__()
         layout = QHBoxLayout();
-
-        self.export_button = QPushButton("export")
-        layout.addWidget(self.export_button)
 
         self.add_button = QPushButton("add")
         layout.addWidget(self.add_button)
@@ -154,8 +150,9 @@ class SourceEditor(QWidget):
         self.journal_input.setAlignment(Qt.AlignmentFlag.AlignTop)
         layout.addWidget(self.journal_input)
         
-        self.year_input = QLineEdit()
-        self.year_input.setPlaceholderText("year")
+        self.year_input = QDateEdit(QDate.currentDate())
+        self.year_input.setDisplayFormat("yyyy")
+        self.year_input.setCalendarPopup(True)
         self.year_input.setAlignment(Qt.AlignmentFlag.AlignTop)
         layout.addWidget(self.year_input)
         
