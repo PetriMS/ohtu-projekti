@@ -7,14 +7,6 @@ from typing import final
 from modules.database import OhtuDatabase
 from modules.bibtex import BibTeXHandler 
 
-fields = [
-    "author",
-    "title",
-    "journal",
-    "year",
-    "doi",
-]
-
 @final
 class MainWindow(QMainWindow):
     def __init__(self, database: OhtuDatabase, halder: BibTeXHandler):
