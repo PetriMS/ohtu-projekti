@@ -1,5 +1,5 @@
-from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QListWidgetItem, QPushButton, QLineEdit, QMessageBox)
-from PyQt6.QtCore import (Qt)
+from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QListWidgetItem, QPushButton, QLineEdit, QMessageBox, QDateEdit)
+from PyQt6.QtCore import (Qt, QDate)
 from PyQt6.QtGui import QAction
 
 from typing import final
@@ -68,7 +68,6 @@ class MainWindow(QMainWindow):
         author = self.editor.author_input.text().strip()
         title = self.editor.title_input.text().strip()
         journal = self.editor.journal_input.text().strip()
-        year_text = self.editor.year_input.text().strip()
         doi = self.editor.doi_input.text().strip()
 
         if not author:
@@ -81,7 +80,7 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Virheilmoitus", "tag is missing.")
             return
 
-        year = int(year_text) if year_text.isdigit() else None
+        year = self.editor.year_input.date().year()
 
         self.database.add_reference(
             tag,
@@ -96,7 +95,7 @@ class MainWindow(QMainWindow):
         self.editor.author_input.clear()
         self.editor.title_input.clear()
         self.editor.journal_input.clear()
-        self.editor.year_input.clear()
+        self.editor.year_input.setDate(QDate.currentDate())
         self.editor.doi_input.clear()
 
         self.viewer.refresh(self.database.get_references())
@@ -162,8 +161,9 @@ class SourceEditor(QWidget):
         self.journal_input.setAlignment(Qt.AlignmentFlag.AlignTop)
         layout.addWidget(self.journal_input)
         
-        self.year_input = QLineEdit()
-        self.year_input.setPlaceholderText("year")
+        self.year_input = QDateEdit(QDate.currentDate())
+        self.year_input.setDisplayFormat("yyyy")
+        self.year_input.setCalendarPopup(True)
         self.year_input.setAlignment(Qt.AlignmentFlag.AlignTop)
         layout.addWidget(self.year_input)
         
