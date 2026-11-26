@@ -8,8 +8,8 @@ class TestBibTeX(unittest.TestCase):
         pass
 
     def test_bibtex_data_creation(self):
-        data = [{'id': 1, 'author': 'Bell, J. S.', 'title': 'On the Einstein Podolsky Rosen Paradox', 'journal': 'Physics Physique Fizika', 'year': 1964, 'doi': '10.1103/PhysicsPhysiqueFizika.1.195'},
-                {'id': 2, 'author': 'Shannon, C. E.', 'title': 'A Mathematical Theory of Communication', 'journal': 'The Bell System Technical Journal', 'year': 1948, 'doi': '10.1002/j.1538-7305.1948.tb01338.x'}]
+        data = [{'id': 1, 'reftype': 'book', 'tag': 'bell', 'author': 'Bell, J. S.', 'title': 'On the Einstein Podolsky Rosen Paradox', 'journal': 'Physics Physique Fizika', 'year': 1964, 'doi': '10.1103/PhysicsPhysiqueFizika.1.195'},
+                {'id': 2, 'reftype': 'book', 'tag': 'shannon', 'author': 'Shannon, C. E.', 'title': 'A Mathematical Theory of Communication', 'journal': 'The Bell System Technical Journal', 'year': 1948, 'doi': '10.1002/j.1538-7305.1948.tb01338.x'}]
 
         io = IOHandler()
         handler = BibTeXHandler(io)

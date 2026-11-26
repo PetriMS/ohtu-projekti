@@ -16,6 +16,8 @@ from typing import final
 
 # Jos references ei ole olemassa, luo sen automaattisesti
 # Muokataan tehdessä paremmaksi
+
+
 @final
 class OhtuDatabase:
     def __init__(self):
@@ -23,11 +25,12 @@ class OhtuDatabase:
         self.conn.row_factory = sqlite3.Row
         self.cursor = self.conn.cursor()
         # tietokannan luominen tms..
-        
+
     def create_table(self):
         _ = self.cursor.execute("""
         CREATE TABLE IF NOT EXISTS reference (
             id INTEGER PRIMARY KEY,
+            reftype TEXT NOT NULL,
             tag TEXT NOT NULL,
             author TEXT NOT NULL,
             title TEXT NOT NULL,
@@ -37,15 +40,15 @@ class OhtuDatabase:
         );
         """)
         self.conn.commit()
-    
+
     # ?-merkit ovat sql-injektioita vastaan
     # IGNORE tarkoittaa, että ei lisätä olemassa olevaa
-    
-    def add_reference(self, tag: str, author: str, title: str, journal: str | None, year: int | None, doi: str | None):
+
+    def add_reference(self, reftype: str, tag: str, author: str, title: str, journal: str | None, year: int | None, doi: str | None):
         _ = self.cursor.execute("""
-        INSERT OR IGNORE INTO reference (tag, author, title, journal, year, doi)
-        VALUES (?, ?, ?, ?, ?, ?);""",
-        (tag, author, title, journal, year, doi))
+        INSERT OR IGNORE INTO reference (reftype, tag, author, title, journal, year, doi)
+        VALUES (?, ?, ?, ?, ?, ?, ?);""",
+                                (reftype, tag, author, title, journal, year, doi))
         self.conn.commit()
 
     def get_references(self) -> list[dict[str, str | int | None]]:
@@ -60,23 +63,26 @@ def init_database() -> None:
     db = OhtuDatabase()
     db.create_table()
     db.add_reference(
-        "bell",
-        "Bell, J. S.",
-        "On the Einstein Podolsky Rosen Paradox",
-        "Physics Physique Fizika",
-        1964,
-        "10.1103/PhysicsPhysiqueFizika.1.195",
+        reftype="book",
+        tag="bell",
+        author="Bell, J. S.",
+        title="On the Einstein Podolsky Rosen Paradox",
+        journal="Physics Physique Fizika",
+        year=1964,
+        doi="10.1103/PhysicsPhysiqueFizika.1.195",
     )
 
     db.add_reference(
-        "shannon",
-        "Shannon, C. E.",
-        "A Mathematical Theory of Communication",
-        "The Bell System Technical Journal",
-        1948,
-        "10.1002/j.1538-7305.1948.tb01338.x",
+        reftype="book",
+        tag="shannon",
+        author="Shannon, C. E.",
+        title="A Mathematical Theory of Communication",
+        journal="The Bell System Technical Journal",
+        year=1948,
+        doi="10.1002/j.1538-7305.1948.tb01338.x",
     )
     print("Database initialized with example references.")
+
 
 # Kommentoikaa pois, näin testausta varten
 # """
@@ -84,24 +90,26 @@ if __name__ == "__main__":
     db = OhtuDatabase()
     db.create_table()
     db.add_reference(
-    "bell",
-    "Bell, J. S.",
-    "On the Einstein Podolsky Rosen Paradox",
-    "Physics Physique Fizika",
-    1964,
-    "10.1103/PhysicsPhysiqueFizika.1.195"
+        reftype="book",
+        tag="bell",
+        author="Bell, J. S.",
+        title="On the Einstein Podolsky Rosen Paradox",
+        journal="Physics Physique Fizika",
+        year=1964,
+        doi="10.1103/PhysicsPhysiqueFizika.1.195"
     )
 
     db.add_reference(
-    "shannon",
-    "Shannon, C. E.",
-    "A Mathematical Theory of Communication",
-    "The Bell System Technical Journal",
-    1948,
-    "10.1002/j.1538-7305.1948.tb01338.x"
+        reftype="book",
+        tag="shannon",
+        author="Shannon, C. E.",
+        title="A Mathematical Theory of Communication",
+        journal="The Bell System Technical Journal",
+        year=1948,
+        doi="10.1002/j.1538-7305.1948.tb01338.x"
     )
     references = db.get_references()
     for reference in references:
         print(reference)
 
-#"""
+# """
