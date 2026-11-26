@@ -22,6 +22,7 @@ jobs:
       - name: Run Pylint
         run: >-
           uv run pylint
+          --ignored-modules=PyQt6.QtWidgets,PyQt6.QtGui
           --disable=no-name-in-module,fixme,redefined-builtin,redefined-outer-name,unspecified-encoding,unused-variable,unnecessary-semicolon
           src
 
