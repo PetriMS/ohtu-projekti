@@ -1,5 +1,6 @@
-from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QListWidgetItem, QPushButton, QLineEdit)
+from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QListWidgetItem, QPushButton, QLineEdit, QLabel)
 from PyQt6.QtCore import (Qt)
+from PyQt6.QtCore import QTimer
 from PyQt6.QtGui import QAction
 
 from typing import final
@@ -31,11 +32,19 @@ class MainWindow(QMainWindow):
         self.editor = SourceEditor()
         self.viewer = SourceViewer(self.database.get_references())
 
+        self.error_message = QLabel()
+        self.error_message.setStyleSheet("color: red;")
+        self.error_message.hide()
+        self.error_timer = QTimer(self)
+        self.error_timer.setSingleShot(True)
+        self.error_timer.timeout.connect(self.error_message.hide)
+
         split = QHBoxLayout()
         split.addWidget(self.editor)
         split.addWidget(self.viewer)
 
         layout = QVBoxLayout()
+        layout.addWidget(self.error_message)
         layout.addWidget(self.bar)
         layout.addLayout(split)
 
@@ -69,8 +78,13 @@ class MainWindow(QMainWindow):
         values = {name: line.text().strip() for name, line in self.editor.inputs.items()}
 
         if not values["author"] or not values["title"]:
-            print("author ja title ovat pakollisia")
+            self.error_message.setText("Virheilmoitus: author ja title ovat pakollisia.")
+            self.error_message.show()
+            self.error_timer.start(5000)
             return
+
+        self.error_timer.stop()
+        self.error_message.hide()
 
         year = int(values["year"]) if values["year"].isdigit() else None
 
