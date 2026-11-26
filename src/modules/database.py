@@ -57,6 +57,10 @@ class OhtuDatabase:
         # Convert to a list of dicts
         return [dict(row) for row in data]
 
+    def delete_reference(self, reference_id: int) -> None:
+        _ = self.cursor.execute("DELETE FROM reference WHERE id = ?", (reference_id,))
+        self.conn.commit()
+
 
 def init_database() -> None:
     # // Create the database table and add example references.
