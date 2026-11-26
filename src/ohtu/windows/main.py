@@ -31,6 +31,7 @@ class MainWindow(QMainWindow):
 
         self.editor = SourceEditor()
         self.viewer = SourceViewer(self.database.get_references())
+        _ = self.bar.search_input.textChanged.connect(self.viewer.filter_items)
 
         self.error_message = QLabel()
         self.error_message.setStyleSheet("color: red;")
@@ -100,6 +101,7 @@ class MainWindow(QMainWindow):
             line.clear()
 
         self.viewer.refresh(self.database.get_references())
+        self.viewer.filter_items(self.bar.search_input.text())
 
 @final
 class Bar(QWidget):
@@ -155,6 +157,12 @@ class SourceViewer(QListWidget):
         self.clear()
         for reference in references:
             self.addItem(Source(**reference))
+
+    def filter_items(self, search_text: str):
+        search_text = search_text.casefold()
+        for index in range(self.count()):
+            item = self.item(index)
+            item.setHidden(search_text not in item.text().casefold())
 
 @final
 class Source(QListWidgetItem):
