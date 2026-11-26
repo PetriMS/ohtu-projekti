@@ -62,8 +62,8 @@ class MainWindow(QMainWindow):
         self.viewer.refresh(self.database.get_references())
 
     def on_export(self):
-        biptext: str = self.handler.create_bibtex_data(self.database.get_references())
-        self.handler.save_to_file(biptext, "./test_biptext.bip")
+        bibtext: str = self.handler.create_bibtex_data(self.database.get_references())
+        self.handler.save_to_file(bibtext, "./test_bibtext.bib")
 
     def on_add(self):
         print("add on painettu")
