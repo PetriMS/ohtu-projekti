@@ -65,8 +65,8 @@ class MainWindow(QMainWindow):
         self.viewer.refresh(self.database.get_references())
 
     def on_export(self):
-        biptext: str = self.handler.create_bibtex_data(self.database.get_references())
-        self.handler.save_to_file(biptext, "./test_biptext.bip")
+        bibtext: str = self.handler.create_bibtex_data(self.database.get_references())
+        self.handler.save_to_file(bibtext, "./test_bibtext.bib")
 
     def on_add(self):
         print("add on painettu")
@@ -180,18 +180,33 @@ class SourceEditor(QWidget):
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         self.tag_input = QLineEdit()
-        self.tag_input.setPlaceholderText("tag")
+        self.tag_input.setPlaceholderText("tag - mandatory")
         self.tag_input.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.tag_input.setStyleSheet("""
+                QLineEdit {
+                    placeholder-text-color: red;
+                    } 
+        """)
         layout.addWidget(self.tag_input)
 
         self.author_input = QLineEdit()
-        self.author_input.setPlaceholderText("author")
+        self.author_input.setPlaceholderText("author - mandatory")
         self.author_input.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.author_input.setStyleSheet("""
+                QLineEdit {
+                    placeholder-text-color: red;
+                    } 
+        """)
         layout.addWidget(self.author_input)
         
         self.title_input = QLineEdit()
-        self.title_input.setPlaceholderText("title")
+        self.title_input.setPlaceholderText("title - mandatory")
         self.title_input.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.title_input.setStyleSheet("""
+                QLineEdit {
+                    placeholder-text-color: red;
+                    } 
+        """)
         layout.addWidget(self.title_input)
         
         self.journal_input = QLineEdit()
@@ -209,6 +224,11 @@ class SourceEditor(QWidget):
         self.doi_input.setPlaceholderText("doi")
         self.doi_input.setAlignment(Qt.AlignmentFlag.AlignTop)
         layout.addWidget(self.doi_input)
+        
+        self.categories_input = QLineEdit()
+        self.categories_input.setPlaceholderText('categories, separate by ","')
+        self.categories_input.setAlignment(Qt.AlignmentFlag.AlignTop)
+        layout.addWidget(self.categories_input)
 
         self.setLayout(layout)
 
