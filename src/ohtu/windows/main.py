@@ -189,6 +189,11 @@ class SourceEditor(QWidget):
         self.doi_input.setPlaceholderText("doi")
         self.doi_input.setAlignment(Qt.AlignmentFlag.AlignTop)
         layout.addWidget(self.doi_input)
+        
+        self.categories_input = QLineEdit()
+        self.categories_input.setPlaceholderText('categories, separate by ","')
+        self.categories_input.setAlignment(Qt.AlignmentFlag.AlignTop)
+        layout.addWidget(self.categories_input)
 
         self.setLayout(layout)
 
