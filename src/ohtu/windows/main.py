@@ -17,8 +17,9 @@ class MainWindow(QMainWindow):
         self.database = database
 
         self.editbar = EditBar()
-        _ = self.editbar.add_button.clicked.connect(self.on_add)
-        _ = self.editbar.delete_button.clicked.connect(self.on_delete)
+
+        _ = self.editbar.add_button.clicked.connect(self.on_save)
+        _ = self.editbar.save_button.clicked.connect(self.on_save)
         _ = self.editbar.uncheck_button.clicked.connect(self.on_uncheck)
         self.viewbar = ViewBar()
 
@@ -69,8 +70,7 @@ class MainWindow(QMainWindow):
         bibtext: str = self.handler.create_bibtex_data(self.database.get_references())
         self.handler.save_to_file(bibtext, "./test_bibtext.bib")
 
-    def on_add(self):
-        print("add on painettu")
+    def on_save(self):
         # reftype = self.editor.reftype_input.text().strip()
         reftype = "book"
         tag = self.editor.tag_input.text().strip()
@@ -91,23 +91,31 @@ class MainWindow(QMainWindow):
 
         year = self.editor.year_input.date().year()
 
-        self.database.add_reference(
-            reftype=reftype,
-            tag=tag,
-            author=author,
-            title=title,
-            journal=journal or None,
-            year=year,
-            doi=doi or None,
-        )
+        # editor.id is None -> new source, otherwise update the source being edited
+        source_id = self.editor.id
+        if source_id is None:
+            self.database.add_reference(
+                reftype=reftype,
+                tag=tag,
+                author=author,
+                title=title,
+                journal=journal or None,
+                year=year,
+                doi=doi or None,
+            )
+        else:
+            # reftype is hardcoded for now, so leave the stored type alone on edit
+            self.database.update_reference(
+                source_id,
+                tag=tag,
+                author=author,
+                title=title,
+                journal=journal or None,
+                year=year,
+                doi=doi or None,
+            )
 
-        self.editor.tag_input.clear()
-        self.editor.author_input.clear()
-        self.editor.title_input.clear()
-        self.editor.journal_input.clear()
-        self.editor.year_input.setDate(QDate.currentDate())
-        self.editor.doi_input.clear()
-
+        self.editor.clear()
         self.refresh()
 
     def on_delete(self):
@@ -130,9 +138,11 @@ class MainWindow(QMainWindow):
         self.viewer.setCurrentItem(None) 
 
     def on_selection_changed(self, current: QListWidgetItem | None, previous: QListWidgetItem | None) -> None:
-        if current is not None:
+        if isinstance(current, Source):
+            self.editor.load_source(current)
             self.editbar.selection()
         else:
+            self.editor.clear()
             self.editbar.no_selection()
 
 
@@ -194,6 +204,9 @@ class ViewBar(QWidget):
 class SourceEditor(QWidget):
     def __init__(self):
         super().__init__()
+        # Id of the source being edited. None means the editor is creating a new source.
+        self.id: int | None = None
+
         layout = QVBoxLayout();
 
         layout.setSpacing(5)
@@ -251,6 +264,29 @@ class SourceEditor(QWidget):
         layout.addWidget(self.categories_input)
 
         self.setLayout(layout)
+
+    def load_source(self, source: "Source") -> None:
+        """Fill the editor from a source and switch to edit mode."""
+        self.id = source.id
+        self.tag_input.setText(source.tag)
+        self.author_input.setText(source.author)
+        self.title_input.setText(source.title)
+        self.journal_input.setText(source.journal or "")
+        # QDateEdit can't be empty, so a source without a year falls back to the current year
+        self.year_input.setDate(QDate(source.year, 1, 1) if source.year is not None else QDate.currentDate())
+        self.doi_input.setText(source.doi or "")
+        self.categories_input.clear()  # categories aren't stored on Source yet
+
+    def clear(self) -> None:
+        """Empty the editor and switch back to add mode."""
+        self.id = None
+        self.tag_input.clear()
+        self.author_input.clear()
+        self.title_input.clear()
+        self.journal_input.clear()
+        self.year_input.setDate(QDate.currentDate())
+        self.doi_input.clear()
+        self.categories_input.clear()
 
 class SourceViewer(QListWidget):
     def __init__(self, references: list[dict[str, str | int | None]]):
