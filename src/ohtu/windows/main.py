@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QListWidgetItem, QPushButton, QLineEdit, QMessageBox, QDateEdit)
+from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QListWidgetItem, QPushButton, QLineEdit, QMessageBox, QDateEdit, QTreeWidget, QTreeWidgetItem)
 from PyQt6.QtCore import (Qt, QDate)
 from PyQt6.QtGui import QAction
 
@@ -137,7 +137,8 @@ class MainWindow(QMainWindow):
     def on_uncheck(self):
         self.viewer.setCurrentItem(None) 
 
-    def on_selection_changed(self, current: QListWidgetItem | None, previous: QListWidgetItem | None) -> None:
+
+    def on_selection_changed(self, current: QTreeWidgetItem | None, previous: QTreeWidgetItem | None) -> None:
         if isinstance(current, Source):
             self.editor.load_source(current)
             self.editbar.selection()
@@ -265,6 +266,7 @@ class SourceEditor(QWidget):
 
         self.setLayout(layout)
 
+
     def load_source(self, source: "Source") -> None:
         """Fill the editor from a source and switch to edit mode."""
         self.id = source.id
@@ -288,24 +290,29 @@ class SourceEditor(QWidget):
         self.doi_input.clear()
         self.categories_input.clear()
 
-class SourceViewer(QListWidget):
+
+class SourceViewer(QTreeWidget):
     def __init__(self, references: list[dict[str, str | int | None]]):
         super().__init__()
+        self.setColumnCount(4)
+        self.setHeaderLabels(["Title", "Author", "Journal", "Year"])
+        self.setRootIsDecorated(False)
         self.refresh(references)
 
     def refresh(self, references: list[dict[str, str | int | None]]):
         self.clear()
         for reference in references:
-            self.addItem(Source(**reference))
+            self.addTopLevelItem(Source(**reference))
 
     def filter_items(self, search_text: str):
         search_text = search_text.casefold()
-        for index in range(self.count()):
-            item = self.item(index)
-            item.setHidden(search_text not in item.text().casefold())
+        for index in range(self.topLevelItemCount()):
+            item = self.topLevelItem(index)
+            if isinstance(item, Source):
+                item.setHidden(search_text not in item.search_text)
 
 @final
-class Source(QListWidgetItem):
+class Source(QTreeWidgetItem):
     """
     Source data model.
     TODO: tää omaksi tiedostoksi ja sinne kaikki bibtex kentät, alustavasti None. MVC-arkkitehtuuri?
@@ -321,8 +328,12 @@ class Source(QListWidgetItem):
         year: int | None,
         doi: str | None,
     ):
-        details = [value for value in (author, journal, str(year) if year is not None else None) if value]
-        super().__init__(f"{title} — {', '.join(details)}")
+        super().__init__([
+            title,
+            author,
+            journal or "",
+            "" if year is None else str(year),
+        ])
         # // Keep the database ID on each item for future selection and editing actions.
         self.id = id
         self.reftype = reftype
@@ -332,3 +343,8 @@ class Source(QListWidgetItem):
         self.journal = journal
         self.year = year
         self.doi = doi
+
+        self.search_text = " ".join(
+            str(value) for value in (title, author, journal, year, doi)
+            if value not in (None, "")
+        ).casefold()
