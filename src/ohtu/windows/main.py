@@ -17,7 +17,6 @@ class MainWindow(QMainWindow):
         self.database = database
 
         self.bar = Bar()
-        _ = self.bar.export_button.clicked.connect(self.on_export)
         _ = self.bar.add_button.clicked.connect(self.on_add)
 
         self.editor = SourceEditor()
@@ -45,6 +44,7 @@ class MainWindow(QMainWindow):
         help_menu = menu_bar.addMenu("Help")
 
         export_action = QAction("Export", self)
+        _ = export_action.triggered.connect(self.on_export)
         import_action = QAction("Import", self)
         about_action = QAction("About", self)
 
@@ -102,9 +102,6 @@ class Bar(QWidget):
     def __init__(self):
         super().__init__()
         layout = QHBoxLayout();
-
-        self.export_button = QPushButton("export")
-        layout.addWidget(self.export_button)
 
         self.add_button = QPushButton("add")
         layout.addWidget(self.add_button)
