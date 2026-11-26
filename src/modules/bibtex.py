@@ -37,10 +37,10 @@ class BibTeXHandler:
         output = ""
 
         # DB keys
-        keys = ["id", "author", "title", "journal", "year", "doi"]
+        # keys = ["id", "author", "title", "journal", "year", "doi"]
 
         for entry in entries:
-            type = "book"
+            reftype = entry['reftype']
             id = entry['id']
 
             content = ""
@@ -48,7 +48,7 @@ class BibTeXHandler:
                 if key not in ["id"]:
                     content += f"    {key} = {{{value}}},\n"
 
-            output += f"""@{type}{{{id}\n{content}}}\n"""
+            output += f"""@{reftype}{{{id}\n{content}}}\n"""
 
         return output
 
@@ -71,9 +71,6 @@ class BibTeXHandler:
 
 # Testi kehitysympäristössä
 if __name__ == "__main__":
-    data = [{'id': 1, 'author': 'Bell, J. S.', 'title': 'On the Einstein Podolsky Rosen Paradox', 'journal': 'Physics Physique Fizika', 'year': 1964, 'doi': '10.1103/PhysicsPhysiqueFizika.1.195'},
-            {'id': 2, 'author': 'Shannon, C. E.', 'title': 'A Mathematical Theory of Communication', 'journal': 'The Bell System Technical Journal', 'year': 1948, 'doi': '10.1002/j.1538-7305.1948.tb01338.x'}]
-
     from modules.database import OhtuDatabase
     db = OhtuDatabase()
     io = IOHandler()
