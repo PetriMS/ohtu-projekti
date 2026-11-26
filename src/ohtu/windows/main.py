@@ -17,6 +17,7 @@ class MainWindow(QMainWindow):
         self.database = database
 
         self.editbar = EditBar()
+
         _ = self.editbar.add_button.clicked.connect(self.on_save)
         _ = self.editbar.save_button.clicked.connect(self.on_save)
         _ = self.editbar.uncheck_button.clicked.connect(self.on_uncheck)
@@ -70,6 +71,8 @@ class MainWindow(QMainWindow):
         self.handler.save_to_file(bibtext, "./test_bibtext.bib")
 
     def on_save(self):
+        # reftype = self.editor.reftype_input.text().strip()
+        reftype = "book"
         tag = self.editor.tag_input.text().strip()
         author = self.editor.author_input.text().strip()
         title = self.editor.title_input.text().strip()
@@ -92,26 +95,44 @@ class MainWindow(QMainWindow):
         source_id = self.editor.id
         if source_id is None:
             self.database.add_reference(
-                tag,
-                author,
-                title,
-                journal or None,
-                year,
-                doi or None,
+                reftype=reftype,
+                tag=tag,
+                author=author,
+                title=title,
+                journal=journal or None,
+                year=year,
+                doi=doi or None,
             )
         else:
+            # reftype is hardcoded for now, so leave the stored type alone on edit
             self.database.update_reference(
                 source_id,
-                tag,
-                author,
-                title,
-                journal or None,
-                year,
-                doi or None,
+                tag=tag,
+                author=author,
+                title=title,
+                journal=journal or None,
+                year=year,
+                doi=doi or None,
             )
 
         self.editor.clear()
         self.refresh()
+
+    def on_delete(self):
+        source = self.viewer.currentItem()
+        if source is not None:
+            answer = QMessageBox.question(
+                self,
+                "Confirm deletion",
+                f"Delete '{source.title}'?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No,
+            )
+            if answer != QMessageBox.StandardButton.Yes:
+                return
+            self.database.delete_reference(source.id)
+            self.refresh()
+            self.viewer.filter_items(self.viewbar.search_input.text())
 
     def on_uncheck(self):
         self.viewer.setCurrentItem(None) 
@@ -292,6 +313,7 @@ class Source(QListWidgetItem):
     def __init__(
         self,
         id: int,
+        reftype: str,
         tag: str,
         author: str,
         title: str,
@@ -303,6 +325,7 @@ class Source(QListWidgetItem):
         super().__init__(f"{title} — {', '.join(details)}")
         # // Keep the database ID on each item for future selection and editing actions.
         self.id = id
+        self.reftype = reftype
         self.tag = tag
         self.author = author
         self.title = title
