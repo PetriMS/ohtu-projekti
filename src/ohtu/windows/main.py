@@ -18,6 +18,7 @@ class MainWindow(QMainWindow):
 
         self.editbar = EditBar()
         _ = self.editbar.add_button.clicked.connect(self.on_add)
+        _ = self.editbar.uncheck_button.clicked.connect(self.on_uncheck)
         self.viewbar = ViewBar()
 
         top_split = QHBoxLayout()
@@ -26,6 +27,8 @@ class MainWindow(QMainWindow):
 
         self.editor = SourceEditor()
         self.viewer = SourceViewer(self.database.get_references())
+        _ = self.viewer.currentItemChanged.connect(self.on_selection_changed)
+
         _ = self.viewbar.search_input.textChanged.connect(self.viewer.filter_items)
 
         bottom_split = QHBoxLayout()
@@ -103,25 +106,57 @@ class MainWindow(QMainWindow):
 
         self.refresh()
 
+    def on_uncheck(self):
+        self.viewer.setCurrentItem(None) 
+
+    def on_selection_changed(self, current: QListWidgetItem | None, previous: QListWidgetItem | None) -> None:
+        if current is not None:
+            self.editbar.selection()
+        else:
+            self.editbar.no_selection()
+
+
 @final
 class EditBar(QWidget):
     def __init__(self):
         super().__init__()
-        layout = QHBoxLayout();
+        self._layout = QHBoxLayout()
+        self.setLayout(self._layout)
 
+        # All buttons are created once, so these references always exist
         self.add_button = QPushButton("add")
-        layout.addWidget(self.add_button)
-
         self.edit_button = QPushButton("edit")
-        layout.addWidget(self.edit_button)
-
         self.delete_button = QPushButton("delete")
-        layout.addWidget(self.delete_button)
-
         self.uncheck_button = QPushButton("uncheck")
-        layout.addWidget(self.uncheck_button)
+        self.save_button = QPushButton("save")
+        self.new_button = QPushButton("new")
+        self.clear_button = QPushButton("clear")
 
-        self.setLayout(layout)
+        self._all_buttons = [
+            self.add_button, self.edit_button, self.delete_button,
+            self.uncheck_button, self.save_button, self.new_button,
+            self.clear_button,
+        ]
+
+        self.no_selection()  # initial state
+
+    def show_only(self, *buttons: QPushButton) -> None:
+        for button in self._all_buttons:
+            self._layout.removeWidget(button)
+            button.hide()
+
+        for button in buttons:
+            self._layout.addWidget(button)
+            button.show()
+
+    def no_selection(self) -> None:
+        self.show_only(self.add_button, self.clear_button)
+
+    def selection(self) -> None:
+        self.show_only(self.save_button, self.delete_button, self.new_button, self.uncheck_button)
+
+    def remove_all_buttons(self) -> None:
+        self.show_only()
 
 @final
 class ViewBar(QWidget):
