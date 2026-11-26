@@ -59,15 +59,21 @@ class MainWindow(QMainWindow):
 
     def on_add(self):
         print("add on painettu")
-        tag = self.editor.author_input.text().strip()
+        tag = self.editor.tag_input.text().strip()
         author = self.editor.author_input.text().strip()
         title = self.editor.title_input.text().strip()
         journal = self.editor.journal_input.text().strip()
         year_text = self.editor.year_input.text().strip()
         doi = self.editor.doi_input.text().strip()
 
-        if not values["author"] or not values["title"]:
-            QMessageBox.warning(self, "Virheilmoitus", "author ja title ovat pakollisia.")
+        if not author:
+            QMessageBox.warning(self, "Virheilmoitus", "author is missing.")
+            return
+        if not title:
+            QMessageBox.warning(self, "Virheilmoitus", "title is missing.")
+            return
+        if not tag:
+            QMessageBox.warning(self, "Virheilmoitus", "tag is missing.")
             return
 
         year = int(year_text) if year_text.isdigit() else None
