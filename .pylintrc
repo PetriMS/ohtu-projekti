@@ -1,1 +1,7 @@
-extension-pkg-whitelist=PyQt6
+[MASTER]
+extension-pkg-allow-list=PyQt6
+persistent=no
+
+[MESSAGES CONTROL]
+disable=all
+enable=E,F,W
