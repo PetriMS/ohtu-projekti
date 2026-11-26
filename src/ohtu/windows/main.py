@@ -19,6 +19,7 @@ class MainWindow(QMainWindow):
         self.editbar = EditBar()
 
         _ = self.editbar.add_button.clicked.connect(self.on_save)
+        _ = self.editbar.delete_button.clicked.connect(self.on_delete)
         _ = self.editbar.save_button.clicked.connect(self.on_save)
         _ = self.editbar.uncheck_button.clicked.connect(self.on_uncheck)
         self.viewbar = ViewBar()
@@ -120,24 +121,27 @@ class MainWindow(QMainWindow):
 
     def on_delete(self):
         source = self.viewer.currentItem()
-        if source is not None:
-            answer = QMessageBox.question(
-                self,
-                "Confirm deletion",
-                f"Delete '{source.title}'?",
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                QMessageBox.StandardButton.No,
-            )
-            if answer != QMessageBox.StandardButton.Yes:
-                return
-            self.database.delete_reference(source.id)
-            self.refresh()
-            self.viewer.filter_items(self.viewbar.search_input.text())
+        if not isinstance(source, Source):
+            return
+
+        answer = QMessageBox.question(
+            self,
+            "Confirm deletion",
+            f"Delete '{source.title}'?",
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,
+        )
+        if answer != QMessageBox.StandardButton.Yes:
+            return
+
+        self.database.delete_reference(source.id)
+        self.refresh()
+        self.viewer.filter_items(self.viewbar.search_input.text())
 
     def on_uncheck(self):
         self.viewer.setCurrentItem(None) 
 
-    def on_selection_changed(self, current: QListWidgetItem | None, previous: QListWidgetItem | None) -> None:
+    def on_selection_changed(self, current: QListWidgetItem | None, _previous: QListWidgetItem | None) -> None:
         if isinstance(current, Source):
             self.editor.load_source(current)
             self.editbar.selection()
