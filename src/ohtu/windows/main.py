@@ -58,6 +58,9 @@ class MainWindow(QMainWindow):
 
         help_menu.addAction(about_action)
 
+    def refresh(self):
+        self.viewer.refresh(self.database.get_references())
+
     def on_export(self):
         biptext: str = self.handler.create_bibtex_data(self.database.get_references())
         self.handler.save_to_file(biptext, "./test_biptext.bip")
@@ -99,7 +102,7 @@ class MainWindow(QMainWindow):
         self.editor.year_input.clear()
         self.editor.doi_input.clear()
 
-        self.viewer.refresh(self.database.get_references())
+        self.refresh()
 
 @final
 class EditBar(QWidget):
