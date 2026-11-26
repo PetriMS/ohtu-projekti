@@ -16,20 +16,25 @@ class MainWindow(QMainWindow):
         self.handler = halder
         self.database = database
 
-        self.bar = Bar()
-        _ = self.bar.add_button.clicked.connect(self.on_add)
+        self.editbar = EditBar()
+        _ = self.editbar.add_button.clicked.connect(self.on_add)
+        self.viewbar = ViewBar()
+
+        top_split = QHBoxLayout()
+        top_split.addWidget(self.editbar)
+        top_split.addWidget(self.viewbar)
 
         self.editor = SourceEditor()
         self.viewer = SourceViewer(self.database.get_references())
-        _ = self.bar.search_input.textChanged.connect(self.viewer.filter_items)
+        _ = self.viewbar.search_input.textChanged.connect(self.viewer.filter_items)
 
-        split = QHBoxLayout()
-        split.addWidget(self.editor)
-        split.addWidget(self.viewer)
+        bottom_split = QHBoxLayout()
+        bottom_split.addWidget(self.editor)
+        bottom_split.addWidget(self.viewer)
 
         layout = QVBoxLayout()
-        layout.addWidget(self.bar)
-        layout.addLayout(split)
+        layout.addLayout(top_split)
+        layout.addLayout(bottom_split)
 
         container = QWidget()
         container.setLayout(layout)
@@ -94,10 +99,9 @@ class MainWindow(QMainWindow):
         self.editor.doi_input.clear()
 
         self.viewer.refresh(self.database.get_references())
-        self.viewer.filter_items(self.bar.search_input.text())
 
 @final
-class Bar(QWidget):
+class EditBar(QWidget):
     def __init__(self):
         super().__init__()
         layout = QHBoxLayout();
@@ -113,6 +117,14 @@ class Bar(QWidget):
 
         self.uncheck_button = QPushButton("uncheck")
         layout.addWidget(self.uncheck_button)
+
+        self.setLayout(layout)
+
+@final
+class ViewBar(QWidget):
+    def __init__(self):
+        super().__init__()
+        layout = QHBoxLayout();
 
         self.search_input = QLineEdit()
         self.search_input.setPlaceholderText("search")
