@@ -132,17 +132,31 @@ class SourceEditor(QWidget):
         self.tag_input = QLineEdit()
         self.tag_input.setPlaceholderText("tag - mandatory")
         self.tag_input.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.tag_input.setStyleSheet("""
+                QLineEdit {
+                    placeholder-text-color: red;
+                    } 
+        """)
         layout.addWidget(self.tag_input)
 
         self.author_input = QLineEdit()
         self.author_input.setPlaceholderText("author - mandatory")
         self.author_input.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.author_input.setStyleSheet("""
+                QLineEdit {
+                    placeholder-text-color: red;
+                    } 
+        """)
         layout.addWidget(self.author_input)
         
         self.title_input = QLineEdit()
         self.title_input.setPlaceholderText("title - mandatory")
         self.title_input.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self.title_input.setStyleSheet
+        self.title_input.setStyleSheet("""
+                QLineEdit {
+                    placeholder-text-color: red;
+                    } 
+        """)
         layout.addWidget(self.title_input)
         
         self.journal_input = QLineEdit()
