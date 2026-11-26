@@ -71,6 +71,8 @@ class MainWindow(QMainWindow):
 
     def on_add(self):
         print("add on painettu")
+        # reftype = self.editor.reftype_input.text().strip()
+        reftype = "book"
         tag = self.editor.tag_input.text().strip()
         author = self.editor.author_input.text().strip()
         title = self.editor.title_input.text().strip()
@@ -90,12 +92,13 @@ class MainWindow(QMainWindow):
         year = self.editor.year_input.date().year()
 
         self.database.add_reference(
-            tag,
-            author,
-            title,
-            journal or None,
-            year,
-            doi or None,
+            reftype=reftype,
+            tag=tag,
+            author=author,
+            title=title,
+            journal=journal or None,
+            year=year,
+            doi=doi or None,
         )
 
         self.editor.tag_input.clear()
@@ -274,6 +277,7 @@ class Source(QListWidgetItem):
     def __init__(
         self,
         id: int,
+        reftype: str,
         tag: str,
         author: str,
         title: str,
@@ -285,6 +289,7 @@ class Source(QListWidgetItem):
         super().__init__(f"{title} — {', '.join(details)}")
         # // Keep the database ID on each item for future selection and editing actions.
         self.id = id
+        self.reftype = reftype
         self.tag = tag
         self.author = author
         self.title = title
