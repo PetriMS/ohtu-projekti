@@ -27,24 +27,25 @@ class OhtuDatabase:
     def create_table(self):
         _ = self.cursor.execute("""
         CREATE TABLE IF NOT EXISTS reference (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id INTEGER PRIMARY KEY,
+            tag TEXT NOT NULL,
             author TEXT NOT NULL,
             title TEXT NOT NULL,
             journal TEXT,
             year INTEGER,
             doi TEXT UNIQUE
-        )
+        );
         """)
         self.conn.commit()
     
     # ?-merkit ovat sql-injektioita vastaan
     # IGNORE tarkoittaa, että ei lisätä olemassa olevaa
     
-    def add_reference(self, author: str, title: str, journal: str | None, year: int | None, doi: str | None):
+    def add_reference(self, tag: str, author: str, title: str, journal: str | None, year: int | None, doi: str | None):
         _ = self.cursor.execute("""
-        INSERT OR IGNORE INTO reference (author, title, journal, year, doi)
-        VALUES (?, ?, ?, ?, ?)""",
-        (author, title, journal, year, doi))
+        INSERT OR IGNORE INTO reference (tag, author, title, journal, year, doi)
+        VALUES (?, ?, ?, ?, ?, ?);""",
+        (tag, author, title, journal, year, doi))
         self.conn.commit()
 
     def get_references(self) -> list[dict[str, str | int | None]]:
@@ -59,13 +60,16 @@ def init_database() -> None:
     db = OhtuDatabase()
     db.create_table()
     db.add_reference(
+        "bell",
         "Bell, J. S.",
         "On the Einstein Podolsky Rosen Paradox",
         "Physics Physique Fizika",
         1964,
         "10.1103/PhysicsPhysiqueFizika.1.195",
     )
+
     db.add_reference(
+        "shannon",
         "Shannon, C. E.",
         "A Mathematical Theory of Communication",
         "The Bell System Technical Journal",
@@ -80,6 +84,7 @@ if __name__ == "__main__":
     db = OhtuDatabase()
     db.create_table()
     db.add_reference(
+    "bell",
     "Bell, J. S.",
     "On the Einstein Podolsky Rosen Paradox",
     "Physics Physique Fizika",
@@ -88,6 +93,7 @@ if __name__ == "__main__":
     )
 
     db.add_reference(
+    "shannon",
     "Shannon, C. E.",
     "A Mathematical Theory of Communication",
     "The Bell System Technical Journal",

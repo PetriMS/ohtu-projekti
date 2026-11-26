@@ -65,25 +65,35 @@ class MainWindow(QMainWindow):
         self.handler.save_to_file(biptext, "./test_biptext.bip")
 
     def on_add(self):
-        print ("add on painettu")
-        values = {name: line.text().strip() for name, line in self.editor.inputs.items()}
+        print("add on painettu")
+        tag = self.editor.author_input.text().strip()
+        author = self.editor.author_input.text().strip()
+        title = self.editor.title_input.text().strip()
+        journal = self.editor.journal_input.text().strip()
+        year_text = self.editor.year_input.text().strip()
+        doi = self.editor.doi_input.text().strip()
 
-        if not values["author"] or not values["title"]:
+        if not author or not title:
             print("author ja title ovat pakollisia")
             return
 
-        year = int(values["year"]) if values["year"].isdigit() else None
+        year = int(year_text) if year_text.isdigit() else None
 
         self.database.add_reference(
-            values["author"],
-            values["title"],
-            values["journal"] or None,
+            tag,
+            author,
+            title,
+            journal or None,
             year,
-            values["doi"] or None,
+            doi or None,
         )
 
-        for line in self.editor.inputs.values():
-            line.clear()
+        self.editor.tag_input.clear()
+        self.editor.author_input.clear()
+        self.editor.title_input.clear()
+        self.editor.journal_input.clear()
+        self.editor.year_input.clear()
+        self.editor.doi_input.clear()
 
         self.viewer.refresh(self.database.get_references())
 
@@ -122,13 +132,36 @@ class SourceEditor(QWidget):
 
         layout.setSpacing(5)
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self.inputs: dict[str, QLineEdit] = {} 
-        for field in fields:
-            line = QLineEdit()
-            line.setPlaceholderText(field)
-            line.setAlignment(Qt.AlignmentFlag.AlignTop)
-            layout.addWidget(line)
-            self.inputs[field] = line
+
+        self.tag_input = QLineEdit()
+        self.tag_input.setPlaceholderText("tag")
+        self.tag_input.setAlignment(Qt.AlignmentFlag.AlignTop)
+        layout.addWidget(self.tag_input)
+
+        self.author_input = QLineEdit()
+        self.author_input.setPlaceholderText("author")
+        self.author_input.setAlignment(Qt.AlignmentFlag.AlignTop)
+        layout.addWidget(self.author_input)
+        
+        self.title_input = QLineEdit()
+        self.title_input.setPlaceholderText("title")
+        self.title_input.setAlignment(Qt.AlignmentFlag.AlignTop)
+        layout.addWidget(self.title_input)
+        
+        self.journal_input = QLineEdit()
+        self.journal_input.setPlaceholderText("journal")
+        self.journal_input.setAlignment(Qt.AlignmentFlag.AlignTop)
+        layout.addWidget(self.journal_input)
+        
+        self.year_input = QLineEdit()
+        self.year_input.setPlaceholderText("year")
+        self.year_input.setAlignment(Qt.AlignmentFlag.AlignTop)
+        layout.addWidget(self.year_input)
+        
+        self.doi_input = QLineEdit()
+        self.doi_input.setPlaceholderText("doi")
+        self.doi_input.setAlignment(Qt.AlignmentFlag.AlignTop)
+        layout.addWidget(self.doi_input)
 
         self.setLayout(layout)
 
@@ -151,6 +184,7 @@ class Source(QListWidgetItem):
     def __init__(
         self,
         id: int,
+        tag: str,
         author: str,
         title: str,
         journal: str | None,
@@ -161,6 +195,7 @@ class Source(QListWidgetItem):
         super().__init__(f"{title} — {', '.join(details)}")
         # // Keep the database ID on each item for future selection and editing actions.
         self.id = id
+        self.tag = tag
         self.author = author
         self.title = title
         self.journal = journal
