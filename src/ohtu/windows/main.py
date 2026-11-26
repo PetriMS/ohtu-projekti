@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QListWidgetItem, QPushButton, QLineEdit)
+from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QListWidgetItem, QPushButton, QLineEdit, QMessageBox)
 from PyQt6.QtCore import (Qt)
 from PyQt6.QtGui import QAction
 
@@ -30,6 +30,7 @@ class MainWindow(QMainWindow):
 
         self.editor = SourceEditor()
         self.viewer = SourceViewer(self.database.get_references())
+        _ = self.bar.search_input.textChanged.connect(self.viewer.filter_items)
 
         split = QHBoxLayout()
         split.addWidget(self.editor)
@@ -73,8 +74,8 @@ class MainWindow(QMainWindow):
         year_text = self.editor.year_input.text().strip()
         doi = self.editor.doi_input.text().strip()
 
-        if not author or not title:
-            print("author ja title ovat pakollisia")
+        if not values["author"] or not values["title"]:
+            QMessageBox.warning(self, "Virheilmoitus", "author ja title ovat pakollisia.")
             return
 
         year = int(year_text) if year_text.isdigit() else None
@@ -96,6 +97,7 @@ class MainWindow(QMainWindow):
         self.editor.doi_input.clear()
 
         self.viewer.refresh(self.database.get_references())
+        self.viewer.filter_items(self.bar.search_input.text())
 
 @final
 class Bar(QWidget):
@@ -174,6 +176,12 @@ class SourceViewer(QListWidget):
         self.clear()
         for reference in references:
             self.addItem(Source(**reference))
+
+    def filter_items(self, search_text: str):
+        search_text = search_text.casefold()
+        for index in range(self.count()):
+            item = self.item(index)
+            item.setHidden(search_text not in item.text().casefold())
 
 @final
 class Source(QListWidgetItem):
