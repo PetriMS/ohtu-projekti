@@ -85,6 +85,7 @@ class SourceEditor(QWidget):
     def load_source(self, source: Source) -> None:
         """Fill the editor from a source and switch to edit mode."""
         self.id = source.id
+        self.reftype_input.setText(source.reftype)
         self.tag_input.setText(source.tag)
         self.author_input.setText(source.author)
         self.title_input.setText(source.title)
