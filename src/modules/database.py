@@ -12,7 +12,9 @@ Esimerkki dataa:
 """
 
 import sqlite3
-from typing import final
+from typing import cast, final
+
+RefRow = dict[str, str | int | None]
 
 # Jos references ei ole olemassa, luo sen automaattisesti
 # Muokataan tehdessä paremmaksi
@@ -39,14 +41,14 @@ class OhtuDatabase:
             doi TEXT UNIQUE
         );
         """)
-        
+
         _ = self.cursor.execute("""
         CREATE TABLE IF NOT EXISTS categories (
             id INTEGER PRIMARY KEY,
             category TEXT NOT NULL UNIQUE
         );
         """)
-        
+
         _ = self.cursor.execute("""
         CREATE TABLE IF NOT EXISTS reference_category (
             reference_id INTEGER NOT NULL,
@@ -56,17 +58,17 @@ class OhtuDatabase:
             FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
         );
         """)
-        
-        self.cursor.execute("""
+
+        _ = self.cursor.execute("""
         CREATE INDEX IF NOT EXISTS idx_refcat_ref
             ON reference_category(reference_id);
             """)
 
-        self.cursor.execute("""
+        _ = self.cursor.execute("""
         CREATE INDEX IF NOT EXISTS idx_refcat_cat
             ON reference_category(category_id);
             """)
-                                
+
         self.conn.commit()
 
     # ?-merkit ovat sql-injektioita vastaan
@@ -88,7 +90,7 @@ class OhtuDatabase:
                                 (reftype, tag, author, title, journal, year, doi, source_id))
         self.conn.commit()
 
-    def get_references(self) -> list[dict[str, str | int | None]]:
+    def get_references(self) -> list[RefRow]:
         _ = self.cursor.execute("SELECT * FROM reference")
         data: list[sqlite3.Row] = self.cursor.fetchall()
         # Convert to a list of dicts
@@ -97,9 +99,9 @@ class OhtuDatabase:
     def delete_reference(self, reference_id: int) -> None:
         _ = self.cursor.execute("DELETE FROM reference WHERE id = ?", (reference_id,))
         self.conn.commit()
-        
+
     def add_category(self, category: str):
-        self.cursor.execute(
+        _ = self.cursor.execute(
             """
             INSERT OR IGNORE INTO categories (category)
             VALUES (?);
@@ -107,9 +109,9 @@ class OhtuDatabase:
             (category,)
         )
         self.conn.commit()
-        
+
     def add_category_to_reference(self, reference_id: int, category_id: int):
-        self.cursor.execute(
+        _ = self.cursor.execute(
             """
             INSERT OR IGNORE INTO reference_category (reference_id, category_id)
             VALUES (?, ?);
@@ -117,13 +119,14 @@ class OhtuDatabase:
             (reference_id, category_id)
         )
         self.conn.commit()
-        
-    def get_categories(self):
-        self.cursor.execute("SELECT * FROM categories")
-        return [dict(row) for row in self.cursor.fetchall()]
-    
-    def get_references_by_category(self, category_id: int):
-        self.cursor.execute(
+
+    def get_categories(self) -> list[RefRow]:
+        _ = self.cursor.execute("SELECT * FROM categories")
+        data: list[sqlite3.Row] = self.cursor.fetchall()
+        return [dict(row) for row in data]
+
+    def get_references_by_category(self, category_id: int) -> list[RefRow]:
+        _ = self.cursor.execute(
             """
             SELECT r.*
             FROM reference r
@@ -133,11 +136,11 @@ class OhtuDatabase:
             """,
             (category_id,)
         )
+        data: list[sqlite3.Row] = self.cursor.fetchall()
+        return [dict(row) for row in data]
 
-        return [dict(row) for row in self.cursor.fetchall()]
-    
-    def get_references_by_category_name(self, category: str):
-        self.cursor.execute(
+    def get_references_by_category_name(self, category: str) -> list[RefRow]:
+        _ = self.cursor.execute(
             """
             SELECT r.*
             FROM reference r
@@ -149,11 +152,11 @@ class OhtuDatabase:
             """,
             (category,)
         )
+        data: list[sqlite3.Row] = self.cursor.fetchall()
+        return [dict(row) for row in data]
 
-        return [dict(row) for row in self.cursor.fetchall()]
-    
-    def get_categories_for_reference(self, reference_id: int):
-        self.cursor.execute(
+    def get_categories_for_reference(self, reference_id: int) -> list[RefRow]:
+        _ = self.cursor.execute(
             """
             SELECT c.*
             FROM categories c
@@ -163,8 +166,8 @@ class OhtuDatabase:
             """,
             (reference_id,)
         )
-
-        return [dict(row) for row in self.cursor.fetchall()]
+        data: list[sqlite3.Row] = self.cursor.fetchall()
+        return [dict(row) for row in data]
 
 
 def init_database() -> None:
@@ -216,34 +219,34 @@ if __name__ == "__main__":
         year=1948,
         doi="10.1002/j.1538-7305.1948.tb01338.x"
     )
-    
+
     db.add_category("AI")
     db.add_category("Quantum Mechanics")
     db.add_category_to_reference(1, 1)
     db.add_category_to_reference(2, 1)
     db.add_category_to_reference(1, 2)
-    
+
     references = db.get_references()
     for reference in references:
         print(reference)
-    
+
     print("Categories:")
     categories = db.get_categories()
     for category in categories:
         print(category)
-        
+
     for category in db.get_categories():
         print(f"\nArticles linked to category {category['category']}:")
 
-        references = db.get_references_by_category(category["id"])
+        references = db.get_references_by_category(cast(int, category["id"]))
 
         for reference in references:
             print(reference)
-            
+
     for reference in db.get_references():
 
         print(f"\nCategories linked to reference {reference['title']}:")
 
-        for category in db.get_categories_for_reference(reference["id"]):
+        for category in db.get_categories_for_reference(cast(int, reference["id"])):
             print(category["category"])
 # """
