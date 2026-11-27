@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import (QTreeWidget)
-from typing import cast, final
+from typing import final
 
 from ohtu.ui.source import Source
 
@@ -15,16 +15,7 @@ class SourceViewer(QTreeWidget):
     def refresh(self, references: list[dict[str, str | int | None]]) -> None:
         self.clear()
         for reference in references:
-            self.addTopLevelItem(Source(
-                id=cast(int, reference["id"]),
-                reftype=cast(str, reference["reftype"]),
-                tag=cast(str, reference["tag"]),
-                author=cast(str, reference["author"]),
-                title=cast(str, reference["title"]),
-                journal=cast(str | None, reference["journal"]),
-                year=cast(int | None, reference["year"]),
-                doi=cast(str | None, reference["doi"]),
-            ))
+            self.addTopLevelItem(Source(reference))
 
     def filter_items(self, search_text: str) -> None:
         search_text = search_text.casefold()
