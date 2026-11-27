@@ -29,6 +29,9 @@ jobs:
       - name: Run tests
         run: uv run coverage run --branch -m pytest
 
+      - name: Report unit test coverage
+        run: uv run coverage report --include='src/modules/*.py'
+
       - name: Install Qt runtime library
         run: |
           sudo apt-get update

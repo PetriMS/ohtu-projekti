@@ -4,6 +4,8 @@ Ohjelmistotuotanto-kurssin miniprojekti, ryhmä 6
 
 [![CI](https://github.com/xNPx3/ohtu-projekti/actions/workflows/main.yml/badge.svg)](https://github.com/xNPx3/ohtu-projekti/actions/workflows/main.yml)
 
+Unit-test coverage (`src/modules`): **61%**
+
 ## IF 4H isn't up.
 
 - [ ] When the add button is pressed we should take the current fields from the `SourceEditor` and then do a database insert with those values. If possible refresh UI, so `SourceViewer` viewer shows the new result.
