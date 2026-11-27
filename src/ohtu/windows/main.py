@@ -33,6 +33,7 @@ class MainWindow(QMainWindow):
         _ = self.editbar.add_button.clicked.connect(self.on_add)
         _ = self.editbar.delete_button.clicked.connect(self.on_delete)
         _ = self.editbar.save_button.clicked.connect(self.on_save)
+        _ = self.editbar.new_button.clicked.connect(self.on_add)
         _ = self.editbar.uncheck_button.clicked.connect(self.on_uncheck)
 
         self.viewbar = ViewBar()

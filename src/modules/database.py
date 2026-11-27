@@ -31,7 +31,7 @@ class OhtuDatabase:
         CREATE TABLE IF NOT EXISTS reference (
             id INTEGER PRIMARY KEY,
             reftype TEXT NOT NULL,
-            tag TEXT NOT NULL,
+            tag TEXT UNIQUE NOT NULL,
             author TEXT NOT NULL,
             title TEXT NOT NULL,
             journal TEXT,
