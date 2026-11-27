@@ -27,7 +27,7 @@ class BibTeXHandler:
     def __init__(self, io: IOHandler):
         self.io = io
 
-    def create_bibtex_data(self, entries: list[dict]):
+    def create_bibtex_data(self, entries: list[dict[str, str | int | None]]) -> str:
         """
         Create BibTeX data from database entries (rows)
         """
