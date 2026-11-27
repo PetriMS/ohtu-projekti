@@ -30,7 +30,16 @@ jobs:
         run: uv run coverage run --branch -m pytest
 
       - name: Report unit test coverage
-        run: uv run coverage report --include='src/modules/*.py'
+        run: |
+          uv run coverage report --include='src/modules/*.py'
+          uv run coverage html --include='src/modules/*.py' --directory /tmp/coverage-report
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v7
+        with:
+          name: unit-test-coverage-report
+          path: /tmp/coverage-report
+          if-no-files-found: error
 
       - name: Install Qt runtime library
         run: |
