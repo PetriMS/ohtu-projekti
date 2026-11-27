@@ -50,6 +50,9 @@ Vaatimukset: [uv](https://docs.astral.sh/uv/) 0.13.7 tai uudempi.
 uv run ohtu
 ```
 
+## Definition of Done
+Tiimin Definition of Done: [Definition of Done (Jira)] (https://ohtu.atlassian.net/wiki/pages/resumedraft.action?draftId=458865)
+
 ## Database
 
 Create the SQLite database and add example references with:
