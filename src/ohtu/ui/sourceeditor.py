@@ -98,6 +98,7 @@ class SourceEditor(QWidget):
     def clear(self) -> None:
         """Empty the editor and switch back to add mode."""
         self.id = None
+        self.reftype_input.clear()
         self.tag_input.clear()
         self.author_input.clear()
         self.title_input.clear()
