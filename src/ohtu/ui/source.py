@@ -1,40 +1,29 @@
 from PyQt6.QtWidgets import (QTreeWidgetItem)
+from ohtu.ui.reference import Reference
 from typing import final
 
 @final
 class Source(QTreeWidgetItem):
     """
-    Source data model.
-    TODO: tää omaksi tiedostoksi ja sinne kaikki bibtex kentät, alustavasti None. MVC-arkkitehtuuri?
+    Source data model. Entry tulee hakemalla databasesta.
+    Kentät löytyy self.referencesta.
     """
-    def __init__(
-        self,
-        id: int,
-        reftype: str,
-        tag: str,
-        author: str,
-        title: str,
-        journal: str | None,
-        year: int | None,
-        doi: str | None,
-    ) -> None:
+
+    def __init__(self, entry: dict[str, str | int | None]) -> None:
+        self.reference = Reference(entry)
         super().__init__([
-            title,
-            author,
-            journal or "",
-            "" if year is None else str(year),
+            self.reference.title,
+            self.reference.author,
+            self.reference.journal or "",
+            "" if self.reference.year is None else str(self.reference.year),
         ])
-        # // Keep the database ID on each item for future selection and editing actions.
-        self.id = id
-        self.reftype = reftype
-        self.tag = tag
-        self.author = author
-        self.title = title
-        self.journal = journal
-        self.year = year
-        self.doi = doi
 
         self.search_text = " ".join(
-            str(value) for value in (title, author, journal, year, doi)
+            str(value) for value in (self.reference.title, self.reference.author, self.reference.journal, self.reference.year, self.reference.doi)
             if value not in (None, "")
         ).casefold()
+
+
+    def __getattr__ (self, name):
+        return self.reference.__getattribute__(name)
+
