@@ -1,4 +1,11 @@
-from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QMessageBox, QTreeWidgetItem)
+from PyQt6.QtWidgets import (
+    QMainWindow, 
+    QWidget, 
+    QVBoxLayout, 
+    QHBoxLayout, 
+    QMessageBox, 
+    QTreeWidgetItem,
+)
 from PyQt6.QtGui import QAction
 
 from typing import final
@@ -27,11 +34,12 @@ class MainWindow(QMainWindow):
         _ = self.editbar.delete_button.clicked.connect(self.on_delete)
         _ = self.editbar.save_button.clicked.connect(self.on_save)
         _ = self.editbar.uncheck_button.clicked.connect(self.on_uncheck)
+
         self.viewbar = ViewBar()
 
         top_split = QHBoxLayout()
-        top_split.addWidget(self.editbar)
-        top_split.addWidget(self.viewbar)
+        top_split.addWidget(self.editbar, 1)
+        top_split.addWidget(self.viewbar, 1)
 
         self.editor = SourceEditor()
         self.viewer = SourceViewer(self.database.get_references())
