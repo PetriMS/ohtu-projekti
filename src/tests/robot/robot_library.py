@@ -27,11 +27,13 @@ class robot_library:
         self.window.refresh()
 
     def add_book(self, tag, author, title):
+        self.window.editor.reftype_input.setText("book")
         self.window.editor.tag_input.setText(tag)
         self.window.editor.author_input.setText(author)
         self.window.editor.title_input.setText(title)
         self.window.editor.year_input.setDate(QDate(2024, 1, 1))
         self.window.editor.doi_input.setText(f"{tag}.example")
+        QTimer.singleShot(0, self._dismiss_validation_dialog)
         self.window.editbar.add_button.click()
         self.app.processEvents()
 
@@ -71,3 +73,8 @@ class robot_library:
         dialog = QApplication.activeModalWidget()
         if isinstance(dialog, QMessageBox):
             dialog.button(QMessageBox.StandardButton.Yes).click()
+
+    def _dismiss_validation_dialog(self):
+        dialog = QApplication.activeModalWidget()
+        if isinstance(dialog, QMessageBox):
+            dialog.reject()
