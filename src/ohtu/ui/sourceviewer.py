@@ -10,12 +10,16 @@ class SourceViewer(QTreeWidget):
         self.setColumnCount(4)
         self.setHeaderLabels(["Title", "Author", "Journal", "Year"])
         self.setRootIsDecorated(False)
+        self.setSortingEnabled(True)
         self.refresh(references)
 
     def refresh(self, references: list[dict[str, str | int | None]]) -> None:
         self.clear()
         for reference in references:
             self.addTopLevelItem(Source(reference))
+
+        for i in range(self.columnCount()):
+            self.resizeColumnToContents(i)
 
     def filter_items(self, search_text: str) -> None:
         search_text = search_text.casefold()
