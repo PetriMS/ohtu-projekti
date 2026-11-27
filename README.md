@@ -51,7 +51,7 @@ uv run ohtu
 ```
 
 ## Definition of Done
-Tiimin Definition of Done: [Definition of Done (Jira)] (https://ohtu.atlassian.net/wiki/pages/resumedraft.action?draftId=458865)
+Tiimin Definition of Done: [Definition of Done (Jira)](https://ohtu.atlassian.net/wiki/pages/resumedraft.action?draftId=458865)
 
 ## Database
 
