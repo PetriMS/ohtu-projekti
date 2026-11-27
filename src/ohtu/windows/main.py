@@ -1,3 +1,5 @@
+from ast import List
+
 from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QMessageBox, QTreeWidgetItem)
 from PyQt6.QtGui import QAction
 
@@ -79,7 +81,7 @@ class MainWindow(QMainWindow):
         self.handler.save_to_file(bibtext, "./test_bibtext.bib")
 
     def on_add(self) -> None:
-        reftype = "book"
+        reftype = self.editor.reftype_input.text().strip()
         tag = self.editor.tag_input.text().strip()
         author = self.editor.author_input.text().strip()
         title = self.editor.title_input.text().strip()
@@ -87,14 +89,18 @@ class MainWindow(QMainWindow):
         doi = self.editor.doi_input.text().strip()
         year = self.editor.year_input.date().year()
 
-        if not author:
-            _ = QMessageBox.warning(self, "Virheilmoitus", "author is missing.")
-            return
-        if not title:
-            _ = QMessageBox.warning(self, "Virheilmoitus", "title is missing.")
-            return
-        if not tag:
-            _ = QMessageBox.warning(self, "Virheilmoitus", "tag is missing.")
+        missing: list[str] = [
+            name
+            for name, value in (("reftype", reftype), ("author", author), ("title", title), ("tag", tag))
+            if not value
+        ]
+        
+        if missing:
+            _ = QMessageBox.warning(
+                self,
+                "Virheilmoitus",
+                f"Missing: {', '.join(missing)}.",
+            )
             return
 
         self.database.add_reference(
@@ -111,8 +117,7 @@ class MainWindow(QMainWindow):
         self.refresh()
 
     def on_save(self) -> None:
-        # reftype = self.editor.reftype_input.text().strip()
-        reftype = "book"
+        reftype = self.editor.reftype_input.text().strip()
         tag = self.editor.tag_input.text().strip()
         author = self.editor.author_input.text().strip()
         title = self.editor.title_input.text().strip()
@@ -120,14 +125,18 @@ class MainWindow(QMainWindow):
         doi = self.editor.doi_input.text().strip()
         year = self.editor.year_input.date().year()
 
-        if not author:
-            _ = QMessageBox.warning(self, "Virheilmoitus", "author is missing.")
-            return
-        if not title:
-            _ = QMessageBox.warning(self, "Virheilmoitus", "title is missing.")
-            return
-        if not tag:
-            _ = QMessageBox.warning(self, "Virheilmoitus", "tag is missing.")
+        missing: list[str] = [
+            name
+            for name, value in (("reftype", reftype), ("author", author), ("title", title), ("tag", tag))
+            if not value
+        ]
+        
+        if missing:
+            _ = QMessageBox.warning(
+                self,
+                "Virheilmoitus",
+                f"Missing: {', '.join(missing)}.",
+            )
             return
 
 
