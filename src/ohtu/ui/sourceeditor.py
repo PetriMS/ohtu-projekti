@@ -18,6 +18,16 @@ class SourceEditor(QWidget):
         layout.setSpacing(5)
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
+        self.reftype_input = QLineEdit()
+        self.reftype_input.setPlaceholderText("reftype - mandatory")
+        self.reftype_input.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.reftype_input.setStyleSheet("""
+                QLineEdit {
+                    placeholder-text-color: red;
+                    } 
+        """)
+        layout.addWidget(self.reftype_input)
+
         self.tag_input = QLineEdit()
         self.tag_input.setPlaceholderText("tag - mandatory")
         self.tag_input.setAlignment(Qt.AlignmentFlag.AlignTop)
