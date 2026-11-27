@@ -4,7 +4,7 @@ Ohjelmistotuotanto-kurssin miniprojekti, ryhmä 6
 
 [![CI](https://github.com/xNPx3/ohtu-projekti/actions/workflows/main.yml/badge.svg)](https://github.com/xNPx3/ohtu-projekti/actions/workflows/main.yml)
 
-Unit-test coverage (`src/modules`): **61%**
+Unit-test coverage (`src/modules`): **61%** · [HTML report from the latest CI run](https://github.com/xNPx3/ohtu-projekti/actions/workflows/main.yml?query=branch%3Amain)
 
 ## IF 4H isn't up.
 
