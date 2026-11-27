@@ -1,7 +1,5 @@
-from typing import final
+from typing import cast, final
 
-# Dynamic attrs
-# pylint: disable=no-member
 
 @final
 class Reference():
@@ -20,13 +18,16 @@ class Reference():
 
 
     def __init__(self, entry: dict[str, str | int | None]):
-        for key, value in entry.items():
-            setattr(self, key, value)
+        self.id = cast(int, entry["id"])
+        self.reftype = cast(str, entry["reftype"])
+        self.tag = cast(str, entry["tag"])
+        self.author = cast(str, entry["author"])
+        self.title = cast(str, entry["title"])
+        self.journal = cast(str | None, entry.get("journal"))
+        self.year = entry.get("year")
+        self.doi = cast(str | None, entry.get("doi"))
 
-    
-            
-        
 
 if __name__ == "__main__":
     r = Reference({'id': 1, 'reftype': 'book', 'tag': 'bell', 'author': 'Bell, J. S.', 'title': 'On the Einstein Podolsky Rosen Paradox', 'journal': 'Physics Physique Fizika', 'year': 1964, 'doi': '10.1103/PhysicsPhysiqueFizika.1.195'})
-    print(r.data)
+    print(r.title)
