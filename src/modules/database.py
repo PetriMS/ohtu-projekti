@@ -20,12 +20,8 @@ from typing import final
 
 @final
 class OhtuDatabase:
-    def __init__(self):
-        self.conn = sqlite3.connect("references.db")
-        
-        # Varmistaa että foreign key -rajoitteet ovat päällä
-        self.conn.execute("PRAGMA foreign_keys = ON")
-        
+    def __init__(self, database_path: str = "references.db"):
+        self.conn = sqlite3.connect(database_path)
         self.conn.row_factory = sqlite3.Row
         self.cursor = self.conn.cursor()
         # tietokannan luominen tms..
@@ -84,12 +80,12 @@ class OhtuDatabase:
         self.conn.commit()
 
 
-    def update_reference(self, reference_id: int, tag: str, author: str, title: str, journal: str | None, year: int | None, doi: str | None):
+    def update_reference(self, source_id: int, reftype: str, tag: str, author: str, title: str, journal: str | None, year: int | None, doi: str | None):
         _ = self.cursor.execute("""
         UPDATE OR IGNORE reference
-        SET tag = ?, author = ?, title = ?, journal = ?, year = ?, doi = ?
+        SET reftype = ?, tag = ?, author = ?, title = ?, journal = ?, year = ?, doi = ?
         WHERE id = ?;""",
-                                (tag, author, title, journal, year, doi, reference_id))
+                                (reftype, tag, author, title, journal, year, doi, source_id))
         self.conn.commit()
 
     def get_references(self) -> list[dict[str, str | int | None]]:

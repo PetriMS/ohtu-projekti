@@ -4,8 +4,9 @@
 *.sqlite
 *.sqlite-wal
 
-# Bip
+# BibTeX
 *.bip
+*.bib
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

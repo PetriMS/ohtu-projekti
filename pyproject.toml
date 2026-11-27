@@ -27,4 +27,5 @@ module-name = ["ohtu", "modules"]
 dev = [
     "coverage>=7.17.3",
     "pytest>=9.2.0",
+    "robotframework>=7.3.2",
 ]
