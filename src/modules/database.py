@@ -74,21 +74,31 @@ class OhtuDatabase:
     # ?-merkit ovat sql-injektioita vastaan
     # IGNORE tarkoittaa, että ei lisätä olemassa olevaa
 
-    def add_reference(self, reftype: str, tag: str, author: str, title: str, journal: str | None, year: int | None, doi: str | None):
-        _ = self.cursor.execute("""
-        INSERT OR IGNORE INTO reference (reftype, tag, author, title, journal, year, doi)
-        VALUES (?, ?, ?, ?, ?, ?, ?);""",
-                                (reftype, tag, author, title, journal, year, doi))
-        self.conn.commit()
+
+    def add_reference(self, reftype: str, tag: str, author: str, title: str,
+                      journal: str | None, year: int | None, doi: str | None) -> str | None:
+        try:
+            _ = self.cursor.execute("""
+                INSERT INTO reference (reftype, tag, author, title, journal, year, doi)
+                VALUES (?, ?, ?, ?, ?, ?, ?);""",
+                (reftype, tag, author, title, journal, year, doi))
+            self.conn.commit()
+        except sqlite3.IntegrityError as e:
+            return str(e)  # e.g. "UNIQUE constraint failed: reference.tag"
 
 
-    def update_reference(self, source_id: int, reftype: str, tag: str, author: str, title: str, journal: str | None, year: int | None, doi: str | None):
-        _ = self.cursor.execute("""
-        UPDATE OR IGNORE reference
-        SET reftype = ?, tag = ?, author = ?, title = ?, journal = ?, year = ?, doi = ?
-        WHERE id = ?;""",
-                                (reftype, tag, author, title, journal, year, doi, source_id))
-        self.conn.commit()
+    def update_reference(self, source_id: int, reftype: str, tag: str, author: str,
+                         title: str, journal: str | None, year: int | None,
+                         doi: str | None) -> str | None:
+        try:
+            _ = self.cursor.execute("""
+                UPDATE reference
+                SET reftype = ?, tag = ?, author = ?, title = ?, journal = ?, year = ?, doi = ?
+                WHERE id = ?;""",
+                (reftype, tag, author, title, journal, year, doi, source_id))
+            self.conn.commit()
+        except sqlite3.IntegrityError as e:
+            return str(e)
 
     def get_references(self) -> list[RefRow]:
         _ = self.cursor.execute("SELECT * FROM reference")
