@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import (
     QHBoxLayout, 
     QMessageBox, 
     QTreeWidgetItem,
+    QFileDialog
 )
 from PyQt6.QtGui import QAction
 
@@ -84,8 +85,21 @@ class MainWindow(QMainWindow):
         self.viewer.refresh(self.database.get_references())
 
     def on_export(self) -> None:
+        path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Export BibTeX",
+            "references.bib",
+            "BibTeX files (*.bib);;All files (*)",
+        )
+
+        if not path:
+            return
+    
+        if not path.endswith(".bib"):
+            path += ".bib"
+    
         bibtext: str = self.handler.create_bibtex_data(self.database.get_references())
-        self.handler.save_to_file(bibtext, "./test_bibtext.bib")
+        self.handler.save_to_file(bibtext, path)
 
     def on_add(self) -> None:
         reftype = self.editor.reftype_input.text().strip()
