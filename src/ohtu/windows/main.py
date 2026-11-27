@@ -2,14 +2,16 @@ from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPu
 from PyQt6.QtCore import (Qt, QDate)
 from PyQt6.QtGui import QAction
 
-from typing import final
+from datetime import date
+from typing import cast, final
 
 from modules.database import OhtuDatabase
 from modules.bibtex import BibTeXHandler 
 
+
 @final
 class MainWindow(QMainWindow):
-    def __init__(self, database: OhtuDatabase, halder: BibTeXHandler):
+    def __init__(self, database: OhtuDatabase, halder: BibTeXHandler) -> None:
         super().__init__()
         self.setWindowTitle("Ohtu")
 
@@ -18,7 +20,7 @@ class MainWindow(QMainWindow):
 
         self.editbar = EditBar()
 
-        _ = self.editbar.add_button.clicked.connect(self.on_save)
+        _ = self.editbar.add_button.clicked.connect(self.on_add)
         _ = self.editbar.delete_button.clicked.connect(self.on_delete)
         _ = self.editbar.save_button.clicked.connect(self.on_save)
         _ = self.editbar.uncheck_button.clicked.connect(self.on_uncheck)
@@ -31,7 +33,6 @@ class MainWindow(QMainWindow):
         self.editor = SourceEditor()
         self.viewer = SourceViewer(self.database.get_references())
         _ = self.viewer.currentItemChanged.connect(self.on_selection_changed)
-
         _ = self.viewbar.search_input.textChanged.connect(self.viewer.filter_items)
 
         bottom_split = QHBoxLayout()
@@ -48,11 +49,14 @@ class MainWindow(QMainWindow):
         self.create_menu()
         self.show()
         
-    def create_menu(self):
+    def create_menu(self) -> None:
         menu_bar = self.menuBar()
+        assert menu_bar is not None
 
         file_menu = menu_bar.addMenu("File")
         help_menu = menu_bar.addMenu("Help")
+        assert file_menu is not None
+        assert help_menu is not None
 
         export_action = QAction("Export", self)
         _ = export_action.triggered.connect(self.on_export)
@@ -64,14 +68,46 @@ class MainWindow(QMainWindow):
 
         help_menu.addAction(about_action)
 
-    def refresh(self):
+    def refresh(self) -> None:
         self.viewer.refresh(self.database.get_references())
 
-    def on_export(self):
+    def on_export(self) -> None:
         bibtext: str = self.handler.create_bibtex_data(self.database.get_references())
         self.handler.save_to_file(bibtext, "./test_bibtext.bib")
 
-    def on_save(self):
+    def on_add(self) -> None:
+        reftype = "book"
+        tag = self.editor.tag_input.text().strip()
+        author = self.editor.author_input.text().strip()
+        title = self.editor.title_input.text().strip()
+        journal = self.editor.journal_input.text().strip()
+        doi = self.editor.doi_input.text().strip()
+        year = self.editor.year_input.date().year()
+
+        if not author:
+            _ = QMessageBox.warning(self, "Virheilmoitus", "author is missing.")
+            return
+        if not title:
+            _ = QMessageBox.warning(self, "Virheilmoitus", "title is missing.")
+            return
+        if not tag:
+            _ = QMessageBox.warning(self, "Virheilmoitus", "tag is missing.")
+            return
+
+        self.database.add_reference(
+            reftype=reftype,
+            tag=tag,
+            author=author,
+            title=title,
+            journal=journal or None,
+            year=year,
+            doi=doi or None,
+        )
+
+        self.editor.clear()
+        self.refresh()
+
+    def on_save(self) -> None:
         # reftype = self.editor.reftype_input.text().strip()
         reftype = "book"
         tag = self.editor.tag_input.text().strip()
@@ -79,47 +115,38 @@ class MainWindow(QMainWindow):
         title = self.editor.title_input.text().strip()
         journal = self.editor.journal_input.text().strip()
         doi = self.editor.doi_input.text().strip()
-
-        if not author:
-            QMessageBox.warning(self, "Virheilmoitus", "author is missing.")
-            return
-        if not title:
-            QMessageBox.warning(self, "Virheilmoitus", "title is missing.")
-            return
-        if not tag:
-            QMessageBox.warning(self, "Virheilmoitus", "tag is missing.")
-            return
-
         year = self.editor.year_input.date().year()
 
-        # editor.id is None -> new source, otherwise update the source being edited
-        source_id = self.editor.id
-        if source_id is None:
-            self.database.add_reference(
-                reftype=reftype,
-                tag=tag,
-                author=author,
-                title=title,
-                journal=journal or None,
-                year=year,
-                doi=doi or None,
-            )
-        else:
-            # reftype is hardcoded for now, so leave the stored type alone on edit
-            self.database.update_reference(
-                source_id,
-                tag=tag,
-                author=author,
-                title=title,
-                journal=journal or None,
-                year=year,
-                doi=doi or None,
-            )
+        if not author:
+            _ = QMessageBox.warning(self, "Virheilmoitus", "author is missing.")
+            return
+        if not title:
+            _ = QMessageBox.warning(self, "Virheilmoitus", "title is missing.")
+            return
+        if not tag:
+            _ = QMessageBox.warning(self, "Virheilmoitus", "tag is missing.")
+            return
+
+
+        if (self.editor.id == None):
+            # add a panic UI has bug!
+            raise Exception("The id wasn't set we have a bug!");
+
+        self.database.update_reference(
+            source_id=self.editor.id,
+            reftype=reftype,
+            tag=tag,
+            author=author,
+            title=title,
+            journal=journal or None,
+            year=year,
+            doi=doi or None,
+        )
 
         self.editor.clear()
         self.refresh()
 
-    def on_delete(self):
+    def on_delete(self) -> None:
         source = self.viewer.currentItem()
         if not isinstance(source, Source):
             return
@@ -138,7 +165,7 @@ class MainWindow(QMainWindow):
         self.refresh()
         self.viewer.filter_items(self.viewbar.search_input.text())
 
-    def on_uncheck(self):
+    def on_uncheck(self) -> None:
         self.viewer.setCurrentItem(None) 
 
     def on_selection_changed(self, current: QTreeWidgetItem | None, _previous: QTreeWidgetItem | None) -> None:
@@ -152,7 +179,7 @@ class MainWindow(QMainWindow):
 
 @final
 class EditBar(QWidget):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self._layout = QHBoxLayout()
         self.setLayout(self._layout)
@@ -166,7 +193,7 @@ class EditBar(QWidget):
         self.new_button = QPushButton("new")
         self.clear_button = QPushButton("clear")
 
-        self._all_buttons = [
+        self._all_buttons: list[QPushButton] = [
             self.add_button, self.edit_button, self.delete_button,
             self.uncheck_button, self.save_button, self.new_button,
             self.clear_button,
@@ -194,7 +221,7 @@ class EditBar(QWidget):
 
 @final
 class ViewBar(QWidget):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         layout = QHBoxLayout();
 
@@ -206,7 +233,7 @@ class ViewBar(QWidget):
 
 @final
 class SourceEditor(QWidget):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         # Id of the source being edited. None means the editor is creating a new source.
         self.id: int | None = None
@@ -251,7 +278,7 @@ class SourceEditor(QWidget):
         self.journal_input.setAlignment(Qt.AlignmentFlag.AlignTop)
         layout.addWidget(self.journal_input)
         
-        self.year_input = QDateEdit(QDate.currentDate())
+        self.year_input = QDateEdit(QDate(date.today().year, 1, 1))
         self.year_input.setDisplayFormat("yyyy")
         self.year_input.setCalendarPopup(True)
         self.year_input.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -278,7 +305,7 @@ class SourceEditor(QWidget):
         self.title_input.setText(source.title)
         self.journal_input.setText(source.journal or "")
         # QDateEdit can't be empty, so a source without a year falls back to the current year
-        self.year_input.setDate(QDate(source.year, 1, 1) if source.year is not None else QDate.currentDate())
+        self.year_input.setDate(QDate(source.year, 1, 1) if source.year is not None else QDate(date.today().year, 1, 1))
         self.doi_input.setText(source.doi or "")
         self.categories_input.clear()  # categories aren't stored on Source yet
 
@@ -289,25 +316,34 @@ class SourceEditor(QWidget):
         self.author_input.clear()
         self.title_input.clear()
         self.journal_input.clear()
-        self.year_input.setDate(QDate.currentDate())
+        self.year_input.setDate(QDate(date.today().year, 1, 1))
         self.doi_input.clear()
         self.categories_input.clear()
 
 
 class SourceViewer(QTreeWidget):
-    def __init__(self, references: list[dict[str, str | int | None]]):
+    def __init__(self, references: list[dict[str, str | int | None]]) -> None:
         super().__init__()
         self.setColumnCount(4)
         self.setHeaderLabels(["Title", "Author", "Journal", "Year"])
         self.setRootIsDecorated(False)
         self.refresh(references)
 
-    def refresh(self, references: list[dict[str, str | int | None]]):
+    def refresh(self, references: list[dict[str, str | int | None]]) -> None:
         self.clear()
         for reference in references:
-            self.addTopLevelItem(Source(**reference))
+            self.addTopLevelItem(Source(
+                id=cast(int, reference["id"]),
+                reftype=cast(str, reference["reftype"]),
+                tag=cast(str, reference["tag"]),
+                author=cast(str, reference["author"]),
+                title=cast(str, reference["title"]),
+                journal=cast(str | None, reference["journal"]),
+                year=cast(int | None, reference["year"]),
+                doi=cast(str | None, reference["doi"]),
+            ))
 
-    def filter_items(self, search_text: str):
+    def filter_items(self, search_text: str) -> None:
         search_text = search_text.casefold()
         for index in range(self.topLevelItemCount()):
             item = self.topLevelItem(index)
@@ -330,7 +366,7 @@ class Source(QTreeWidgetItem):
         journal: str | None,
         year: int | None,
         doi: str | None,
-    ):
+    ) -> None:
         super().__init__([
             title,
             author,
