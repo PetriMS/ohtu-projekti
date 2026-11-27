@@ -110,7 +110,7 @@ class MainWindow(QMainWindow):
             )
             return
 
-        self.database.add_reference(
+        status: str|None = self.database.add_reference(
             reftype=reftype,
             tag=tag,
             author=author,
@@ -119,6 +119,14 @@ class MainWindow(QMainWindow):
             year=year,
             doi=doi or None,
         )
+
+        if status:
+            _ = QMessageBox.warning(
+                self,
+                "Virheilmoitus", status
+            )
+
+            return
 
         self.editor.clear()
         self.refresh()
@@ -151,7 +159,8 @@ class MainWindow(QMainWindow):
             # add a panic UI has bug!
             raise RuntimeError("The id wasn't set we have a bug!")
 
-        self.database.update_reference(
+
+        status: str|None  = self.database.update_reference(
             source_id=self.editor.id,
             reftype=reftype,
             tag=tag,
@@ -161,6 +170,14 @@ class MainWindow(QMainWindow):
             year=year,
             doi=doi or None,
         )
+
+        if status:
+            _ = QMessageBox.warning(
+                self,
+                "Virheilmoitus", status
+            )
+
+            return
 
         self.editor.clear()
         self.refresh()
