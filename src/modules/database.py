@@ -52,12 +52,12 @@ class OhtuDatabase:
         self.conn.commit()
 
 
-    def update_reference(self, reference_id: int, tag: str, author: str, title: str, journal: str | None, year: int | None, doi: str | None):
+    def update_reference(self, source_id: int, reftype: str, tag: str, author: str, title: str, journal: str | None, year: int | None, doi: str | None):
         _ = self.cursor.execute("""
         UPDATE OR IGNORE reference
-        SET tag = ?, author = ?, title = ?, journal = ?, year = ?, doi = ?
+        SET reftype = ?, tag = ?, author = ?, title = ?, journal = ?, year = ?, doi = ?
         WHERE id = ?;""",
-                                (tag, author, title, journal, year, doi, reference_id))
+                                (reftype, tag, author, title, journal, year, doi, source_id))
         self.conn.commit()
 
     def get_references(self) -> list[dict[str, str | int | None]]:
