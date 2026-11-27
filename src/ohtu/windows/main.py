@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QListWidgetItem, QPushButton, QLineEdit, QMessageBox, QDateEdit, QTreeWidget, QTreeWidgetItem)
+from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QMessageBox, QDateEdit, QTreeWidget, QTreeWidgetItem)
 from PyQt6.QtCore import (Qt, QDate)
 from PyQt6.QtGui import QAction
 
@@ -18,7 +18,7 @@ class MainWindow(QMainWindow):
 
         self.editbar = EditBar()
 
-        _ = self.editbar.add_button.clicked.connect(self.on_save)
+        _ = self.editbar.add_button.clicked.connect(self.on_add)
         _ = self.editbar.delete_button.clicked.connect(self.on_delete)
         _ = self.editbar.save_button.clicked.connect(self.on_save)
         _ = self.editbar.uncheck_button.clicked.connect(self.on_uncheck)
@@ -31,7 +31,6 @@ class MainWindow(QMainWindow):
         self.editor = SourceEditor()
         self.viewer = SourceViewer(self.database.get_references())
         _ = self.viewer.currentItemChanged.connect(self.on_selection_changed)
-
         _ = self.viewbar.search_input.textChanged.connect(self.viewer.filter_items)
 
         bottom_split = QHBoxLayout()
@@ -71,8 +70,7 @@ class MainWindow(QMainWindow):
         bibtext: str = self.handler.create_bibtex_data(self.database.get_references())
         self.handler.save_to_file(bibtext, "./test_bibtext.bib")
 
-    def on_save(self):
-        # reftype = self.editor.reftype_input.text().strip()
+    def on_add(self):
         reftype = "book"
         tag = self.editor.tag_input.text().strip()
         author = self.editor.author_input.text().strip()
@@ -90,31 +88,54 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Virheilmoitus", "tag is missing.")
             return
 
+        self.database.add_reference(
+            reftype=reftype,
+            tag=tag,
+            author=author,
+            title=title,
+            journal=journal or None,
+            year=year,
+            doi=doi or None,
+        )
+
+        self.editor.clear()
+        self.refresh()
+
+    def on_save(self):
+        # reftype = self.editor.reftype_input.text().strip()
+        reftype = "book"
+        tag = self.editor.tag_input.text().strip()
+        author = self.editor.author_input.text().strip()
+        title = self.editor.title_input.text().strip()
+        journal = self.editor.journal_input.text().strip()
+        doi = self.editor.doi_input.text().strip()
         year = self.editor.year_input.date().year()
 
-        # editor.id is None -> new source, otherwise update the source being edited
-        source_id = self.editor.id
-        if source_id is None:
-            self.database.add_reference(
-                reftype=reftype,
-                tag=tag,
-                author=author,
-                title=title,
-                journal=journal or None,
-                year=year,
-                doi=doi or None,
-            )
-        else:
-            # reftype is hardcoded for now, so leave the stored type alone on edit
-            self.database.update_reference(
-                source_id,
-                tag=tag,
-                author=author,
-                title=title,
-                journal=journal or None,
-                year=year,
-                doi=doi or None,
-            )
+        if not author:
+            QMessageBox.warning(self, "Virheilmoitus", "author is missing.")
+            return
+        if not title:
+            QMessageBox.warning(self, "Virheilmoitus", "title is missing.")
+            return
+        if not tag:
+            QMessageBox.warning(self, "Virheilmoitus", "tag is missing.")
+            return
+
+
+        if (self.editor.id == None):
+            # add a panic UI has bug!
+            raise Exception("The id wasn't set we have a bug!");
+
+        self.database.update_reference(
+            source_id=self.editor.id,
+            reftype=reftype,
+            tag=tag,
+            author=author,
+            title=title,
+            journal=journal or None,
+            year=year,
+            doi=doi or None,
+        )
 
         self.editor.clear()
         self.refresh()
