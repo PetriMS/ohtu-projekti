@@ -20,8 +20,8 @@ from typing import final
 
 @final
 class OhtuDatabase:
-    def __init__(self):
-        self.conn = sqlite3.connect("references.db")
+    def __init__(self, database_path: str = "references.db"):
+        self.conn = sqlite3.connect(database_path)
         self.conn.row_factory = sqlite3.Row
         self.cursor = self.conn.cursor()
         # tietokannan luominen tms..

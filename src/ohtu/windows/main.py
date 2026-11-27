@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QListWidget, QListWidgetItem, QPushButton, QLineEdit, QMessageBox, QDateEdit, QTreeWidget, QTreeWidgetItem)
+from PyQt6.QtWidgets import (QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QMessageBox, QDateEdit, QTreeWidget, QTreeWidgetItem)
 from PyQt6.QtCore import (Qt, QDate)
 from PyQt6.QtGui import QAction
 
@@ -141,7 +141,7 @@ class MainWindow(QMainWindow):
     def on_uncheck(self):
         self.viewer.setCurrentItem(None) 
 
-    def on_selection_changed(self, current: QTreeWidgetItem | None, previous: QTreeWidgetItem | None) -> None:
+    def on_selection_changed(self, current: QTreeWidgetItem | None, _previous: QTreeWidgetItem | None) -> None:
         if isinstance(current, Source):
             self.editor.load_source(current)
             self.editbar.selection()
