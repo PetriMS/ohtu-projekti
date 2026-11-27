@@ -22,6 +22,10 @@ from typing import final
 class OhtuDatabase:
     def __init__(self):
         self.conn = sqlite3.connect("references.db")
+        
+        # Varmistaa että foreign key -rajoitteet ovat päällä
+        self.conn.execute("PRAGMA foreign_keys = ON")
+        
         self.conn.row_factory = sqlite3.Row
         self.cursor = self.conn.cursor()
         # tietokannan luominen tms..
@@ -39,6 +43,34 @@ class OhtuDatabase:
             doi TEXT UNIQUE
         );
         """)
+        
+        _ = self.cursor.execute("""
+        CREATE TABLE IF NOT EXISTS categories (
+            id INTEGER PRIMARY KEY,
+            category TEXT NOT NULL UNIQUE
+        );
+        """)
+        
+        _ = self.cursor.execute("""
+        CREATE TABLE IF NOT EXISTS reference_category (
+            reference_id INTEGER NOT NULL,
+            category_id INTEGER NOT NULL,
+            PRIMARY KEY (reference_id, category_id),
+            FOREIGN KEY (reference_id) REFERENCES reference(id) ON DELETE CASCADE,
+            FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
+        );
+        """)
+        
+        self.cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_refcat_ref
+            ON reference_category(reference_id);
+            """)
+
+        self.cursor.execute("""
+        CREATE INDEX IF NOT EXISTS idx_refcat_cat
+            ON reference_category(category_id);
+            """)
+                                
         self.conn.commit()
 
     # ?-merkit ovat sql-injektioita vastaan
@@ -69,6 +101,74 @@ class OhtuDatabase:
     def delete_reference(self, reference_id: int) -> None:
         _ = self.cursor.execute("DELETE FROM reference WHERE id = ?", (reference_id,))
         self.conn.commit()
+        
+    def add_category(self, category: str):
+        self.cursor.execute(
+            """
+            INSERT OR IGNORE INTO categories (category)
+            VALUES (?);
+            """,
+            (category,)
+        )
+        self.conn.commit()
+        
+    def add_category_to_reference(self, reference_id: int, category_id: int):
+        self.cursor.execute(
+            """
+            INSERT OR IGNORE INTO reference_category (reference_id, category_id)
+            VALUES (?, ?);
+            """,
+            (reference_id, category_id)
+        )
+        self.conn.commit()
+        
+    def get_categories(self):
+        self.cursor.execute("SELECT * FROM categories")
+        return [dict(row) for row in self.cursor.fetchall()]
+    
+    def get_references_by_category(self, category_id: int):
+        self.cursor.execute(
+            """
+            SELECT r.*
+            FROM reference r
+            JOIN reference_category rc
+                ON r.id = rc.reference_id
+            WHERE rc.category_id = ?;
+            """,
+            (category_id,)
+        )
+
+        return [dict(row) for row in self.cursor.fetchall()]
+    
+    def get_references_by_category_name(self, category: str):
+        self.cursor.execute(
+            """
+            SELECT r.*
+            FROM reference r
+            JOIN reference_category rc
+                ON r.id = rc.reference_id
+            JOIN categories c
+                ON c.id = rc.category_id
+            WHERE c.category = ?;
+            """,
+            (category,)
+        )
+
+        return [dict(row) for row in self.cursor.fetchall()]
+    
+    def get_categories_for_reference(self, reference_id: int):
+        self.cursor.execute(
+            """
+            SELECT c.*
+            FROM categories c
+            JOIN reference_category rc
+                ON c.id = rc.category_id
+            WHERE rc.reference_id = ?;
+            """,
+            (reference_id,)
+        )
+
+        return [dict(row) for row in self.cursor.fetchall()]
 
 
 def init_database() -> None:
@@ -96,7 +196,6 @@ def init_database() -> None:
     )
     print("Database initialized with example references.")
 
-
 # Kommentoikaa pois, näin testausta varten
 # """
 if __name__ == "__main__":
@@ -121,8 +220,34 @@ if __name__ == "__main__":
         year=1948,
         doi="10.1002/j.1538-7305.1948.tb01338.x"
     )
+    
+    db.add_category("AI")
+    db.add_category("Quantum Mechanics")
+    db.add_category_to_reference(1, 1)
+    db.add_category_to_reference(2, 1)
+    db.add_category_to_reference(1, 2)
+    
     references = db.get_references()
     for reference in references:
         print(reference)
+    
+    print("Categories:")
+    categories = db.get_categories()
+    for category in categories:
+        print(category)
+        
+    for category in db.get_categories():
+        print(f"\nArticles linked to category {category['category']}:")
 
+        references = db.get_references_by_category(category["id"])
+
+        for reference in references:
+            print(reference)
+            
+    for reference in db.get_references():
+
+        print(f"\nCategories linked to reference {reference['title']}:")
+
+        for category in db.get_categories_for_reference(reference["id"]):
+            print(category["category"])
 # """
