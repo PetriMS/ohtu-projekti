@@ -140,9 +140,9 @@ class MainWindow(QMainWindow):
             return
 
 
-        if (self.editor.id == None):
+        if self.editor.id is None:
             # add a panic UI has bug!
-            raise Exception("The id wasn't set we have a bug!");
+            raise RuntimeError("The id wasn't set we have a bug!")
 
         self.database.update_reference(
             source_id=self.editor.id,

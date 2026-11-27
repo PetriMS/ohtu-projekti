@@ -17,7 +17,7 @@ jobs:
           python-version: "3.14"
 
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --locked
 
       - name: Run Pylint
         run: >-
@@ -29,8 +29,12 @@ jobs:
       - name: Run tests
         run: uv run coverage run --branch -m pytest
 
-    #   - name: Coverage report
-    #     run: uv run coverage xml
+      - name: Install Qt runtime library
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes libegl1
 
-    # run localy
-    # uv run pylint --disable=no-name-in-module,fixme,redefined-builtin,redefined-outer-name,unspecified-encoding,unused-variable,unnecessary-semicolon src
+      - name: Run Robot Framework story tests
+        run: uv run robot --outputdir /tmp/robot-results src/tests/robot
+        env:
+          QT_QPA_PLATFORM: offscreen
